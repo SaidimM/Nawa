@@ -1,10 +1,7 @@
-import com.android.build.gradle.internal.packaging.defaultExcludes
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id ("kotlin-kapt")
-    id ("kotlin-parcelize")
 }
 
 android {
@@ -52,7 +49,8 @@ dependencies {
     implementation(libs.utils)
     implementation(libs.bindings)
     implementation(libs.room.runtime)
-    kapt(libs.room.ktx)
+//    implementation(libs.room.ktx)
+//    ksp(libs.androidx.room.compiler.v250)
     implementation(libs.lifecycle.extensions)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.common.java8)
@@ -61,6 +59,5 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
-    implementation(libs.glide.glide)
     implementation(libs.palette)
 }

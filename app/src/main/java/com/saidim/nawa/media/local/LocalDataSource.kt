@@ -8,7 +8,7 @@ import com.saidim.nawa.base.utils.LocalMediaUtils
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayHistory
 import com.saidim.nawa.media.local.bean.PlayList
-import com.saidim.nawa.media.local.database.MusicDatabase
+import com.saidim.nawa.media.local.database.NawaDatabase
 import com.saidim.nawa.media.remote.lyrics.Lyric
 import com.saidim.nawa.media.remote.search.Song
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 
-class LocalDataSource(private val database: MusicDatabase) {
+class LocalDataSource(private val database: NawaDatabase) {
     private val TAG = "LocalDataSource"
 
     private val musicDao = database.getMusicDao()

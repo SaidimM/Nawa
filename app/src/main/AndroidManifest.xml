@@ -7,11 +7,22 @@
             android:allowBackup="true"
             android:fullBackupContent="@xml/backup_rules"
             tools:targetApi="31"
+            android:name=".App"
             android:dataExtractionRules="@xml/data_extraction_rules"
             android:label="@string/app_name"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/Theme.Nawa"/>
+            android:theme="@style/Theme.Nawa">
+        <activity
+                android:screenOrientation="fullSensor"
+                android:name=".view.MusicActivity"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
 
 </manifest>

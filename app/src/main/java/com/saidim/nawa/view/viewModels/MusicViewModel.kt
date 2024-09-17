@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class MusicViewModel : ViewModel() {
     private val TAG = "MusicViewModel"
 
-    private val repository = ServiceLocator.provideMusicRepository()
+//    private val repository = ServiceLocator.provideMusicRepository()
     private val musicPlayer = ServiceLocator.provideMusicPlayer()
 
     private var index: Int = 0
@@ -41,11 +41,11 @@ class MusicViewModel : ViewModel() {
     val controllerState: LiveData<ControllerState> = _controllerState
 
     fun loadMusic() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getMusicList()
-                .catch { LogUtil.e(TAG, it.message.toString()) }
-                .collect { _musics.postValue(it) }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            repository.getMusicList()
+//                .catch { LogUtil.e(TAG, it.message.toString()) }
+//                .collect { _musics.postValue(it) }
+//        }
     }
 
     fun playMusic(position: Int = index) {
@@ -76,15 +76,15 @@ class MusicViewModel : ViewModel() {
     }
 
     fun getLastPlayedMusic() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getLastPlayedMusic()
-                .catch { LogUtil.e(TAG, it.message.toString()) }
-                .collect { _music.postValue(it) }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            repository.getLastPlayedMusic()
+//                .catch { LogUtil.e(TAG, it.message.toString()) }
+//                .collect { _music.postValue(it) }
+//        }
     }
 
     private fun saveCurrentMusic() {
-        music.value?.let { viewModelScope.launch(Dispatchers.IO) { repository.saveLastPlayedMusic(it) } }
+//        music.value?.let { viewModelScope.launch(Dispatchers.IO) { repository.saveLastPlayedMusic(it) } }
     }
 
     fun updateControllerOffset(offset: Float) {

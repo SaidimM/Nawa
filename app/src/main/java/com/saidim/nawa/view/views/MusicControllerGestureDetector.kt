@@ -54,18 +54,18 @@ class MusicControllerGestureDetector(
         return true
     }
 
-    override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
         if (viewModel.controllerState.value == ControllerState.EXPENDED) updateState(ControllerState.COLLAPSING)
         else if (viewModel.controllerState.value == ControllerState.COLLAPSED) updateState(ControllerState.EXPENDING)
-        val deltaOffset = (e1.y - e2.y) / deltaHeight
+        val deltaOffset = (e1!!.y - e2.y) / deltaHeight
         LogUtil.i(TAG, "deltaHeight: $deltaHeight")
         LogUtil.i(TAG, "e1.y: ${e1.y}, e2.y: ${e2.y}, deltaOffset: $deltaOffset")
         updateOffset(viewModel.controllerOffset.value!! + deltaOffset)
         return true
     }
 
-    override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-        LogUtil.i(TAG, "onFling, e1: ${e1.y}, e2: ${e2.y}, velocityY: $velocityY")
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+        LogUtil.i(TAG, "onFling, e1: ${e1!!.y}, e2: ${e2.y}, velocityY: $velocityY")
         val isScrollUp = if (e2.y - e1.y < 0) true else false
         return if (isScrollUp) expandController()
         else collapseController()

@@ -53,7 +53,7 @@ class MusicPlayerFragment : BaseFragment() {
         }
         viewModel.albumCover.observe(viewLifecycleOwner) {
             if (it == null) return@observe
-            Glide.with(requireContext()).load(it).into(binding.albumCover)
+//            Glide.with(requireContext()).load(it).into(binding.albumCover)
             binding.fluidView.initBackground(it)
         }
         viewModel.viewState.observe(this) {
