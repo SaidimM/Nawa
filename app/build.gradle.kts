@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -49,8 +50,8 @@ dependencies {
     implementation(libs.utils)
     implementation(libs.bindings)
     implementation(libs.room.runtime)
-//    implementation(libs.room.ktx)
-//    ksp(libs.androidx.room.compiler.v250)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
     implementation(libs.lifecycle.extensions)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.common.java8)
@@ -60,4 +61,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.palette)
+    implementation(libs.glide.glide)
+    kapt(libs.glide.compiler)
 }

@@ -1,6 +1,9 @@
 pluginManagement {
     repositories {
         google {
+            maven {
+                setUrl("https://maven.aliyun.com/repository/public")
+            }
             content {
                 includeGroupByRegex("com\\.android.*")
                 includeGroupByRegex("com\\.google.*")
@@ -14,6 +17,9 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven {
+            setUrl("https://maven.aliyun.com/repository/public")
+        }
         google()
         mavenCentral()
     }
