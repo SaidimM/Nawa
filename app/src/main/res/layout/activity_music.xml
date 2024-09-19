@@ -54,5 +54,14 @@
                     android:name="com.saidim.nawa.view.fragments.MusicPlayerFragment"
                     android:id="@+id/fragment"/>
         </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/greeting"
+                android:gravity="center"
+                android:onClick="grantPermissions"
+                android:textColor="@color/white"
+                android:text="@string/review_storage"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -159,9 +159,6 @@ abstract class BaseActivity : AppCompatActivity() {
         return screenHeight - rect.bottom != 0
     }
 
-    /**
-     * android 6.0 以上需要动态申请权限
-     */
     fun initPermission(permissions: Array<String>) {
         val toApplyList = ArrayList<String>()
         for (perm in permissions) {

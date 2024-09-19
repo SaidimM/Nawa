@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class MusicListViewModel : ViewModel() {
 
-//    private val repository = ServiceLocator.provideMusicRepository()
+    private val repository = ServiceLocator.provideMusicRepository()
     var index: Int = 0
 
     private var _musicVideo: MutableLiveData<MusicVideoResult> = MutableLiveData()

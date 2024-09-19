@@ -5,22 +5,37 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.saidim.nawa.Constants
 import com.saidim.nawa.ServiceLocator
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.view.enums.ControllerState
 import com.saidim.nawa.view.enums.PlayState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MusicViewModel : ViewModel() {
     private val TAG = "MusicViewModel"
 
-//    private val repository = ServiceLocator.provideMusicRepository()
+    private val repository = ServiceLocator.provideMusicRepository()
     private val musicPlayer = ServiceLocator.provideMusicPlayer()
 
     private var index: Int = 0
+
+    private val _isPermissionGranted: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isPermissionGranted: LiveData<Boolean> = _isPermissionGranted
+
+    fun permissionGranted(isGranted: Boolean) {
+        _isPermissionGranted.postValue(isGranted)
+    }
+
+    fun createDirectories() {
+        val albumDir = Constants.ALBUM_COVER_DIR
+        val lyricDir = Constants.LYRIC_DIR
+        if (File(albumDir).mkdirs()) LogUtil.d(TAG, "create album dir success")
+        if (File(lyricDir).mkdirs()) LogUtil.d(TAG, "create lyric dir success")
+    }
 
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
@@ -41,11 +56,11 @@ class MusicViewModel : ViewModel() {
     val controllerState: LiveData<ControllerState> = _controllerState
 
     fun loadMusic() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            repository.getMusicList()
-//                .catch { LogUtil.e(TAG, it.message.toString()) }
-//                .collect { _musics.postValue(it) }
-//        }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getMusicList()
+                .catch { LogUtil.e(TAG, it.message.toString()) }
+                .collect { _musics.postValue(it) }
+        }
     }
 
     fun playMusic(position: Int = index) {
@@ -76,15 +91,15 @@ class MusicViewModel : ViewModel() {
     }
 
     fun getLastPlayedMusic() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            repository.getLastPlayedMusic()
-//                .catch { LogUtil.e(TAG, it.message.toString()) }
-//                .collect { _music.postValue(it) }
-//        }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getLastPlayedMusic()
+                .catch { LogUtil.e(TAG, it.message.toString()) }
+                .collect { _music.postValue(it) }
+        }
     }
 
     private fun saveCurrentMusic() {
-//        music.value?.let { viewModelScope.launch(Dispatchers.IO) { repository.saveLastPlayedMusic(it) } }
+        music.value?.let { viewModelScope.launch(Dispatchers.IO) { repository.saveLastPlayedMusic(it) } }
     }
 
     fun updateControllerOffset(offset: Float) {
