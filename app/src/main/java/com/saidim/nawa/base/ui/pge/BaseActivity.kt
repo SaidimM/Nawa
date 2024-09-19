@@ -98,8 +98,6 @@ abstract class BaseActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = Color.TRANSPARENT
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setStatusBarContent(isLightTheme())
     }
 

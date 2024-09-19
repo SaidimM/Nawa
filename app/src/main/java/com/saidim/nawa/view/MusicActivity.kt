@@ -21,8 +21,7 @@ class MusicActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initData()
-        initView()
+        checkPermissions()
     }
 
     private fun initData() {
@@ -33,9 +32,14 @@ class MusicActivity : BaseActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initView() {
-        title = getString(R.string.music)
         binding.cardView.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
+        binding.fragmentList.visibility = if (viewModel.isPermissionGranted.value == true) View.VISIBLE else View.GONE
+        binding.greeting.visibility = if (viewModel.isPermissionGranted.value == true) View.GONE else View.VISIBLE
         gestureDetector.onSingleTapListener = { gestureDetector.expandController() }
+    }
+
+    private fun checkPermissions() {
+        if (!isPermissionsGranted(permissions)) initPermission(permissions) else viewModel.permissionGranted(true)
     }
 
     override fun onStop() {
@@ -49,9 +53,8 @@ class MusicActivity : BaseActivity() {
         viewModel.controllerOffset.observe(this) { dispatcher.changeControllerOffset(it) }
         viewModel.isPermissionGranted.observe(this) {
             LogUtil.d(TAG, "isPermissionGranted: $it")
-            binding.fragmentList.visibility = if (it) View.VISIBLE else View.GONE
-            binding.greeting.visibility = if (it) View.GONE else View.VISIBLE
-            if (it) viewModel.loadMusic()
+            initData()
+            initView()
         }
     }
 

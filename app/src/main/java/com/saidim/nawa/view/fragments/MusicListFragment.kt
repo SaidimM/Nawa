@@ -15,6 +15,7 @@ import com.saidim.nawa.databinding.ItemSongBinding
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.view.viewModels.MusicListViewModel
 import com.saidim.nawa.view.viewModels.MusicViewModel
+import kotlinx.coroutines.launch
 
 class MusicListFragment : BaseFragment() {
     override val binding: FragmentMusicListBinding by lazy { FragmentMusicListBinding.inflate(layoutInflater) }
@@ -38,7 +39,8 @@ class MusicListFragment : BaseFragment() {
                 binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
                 binding.mv.setOnClickListener { viewModel.getMv(item) }
                 binding.root.setOnClickListener { state.playMusic(position) }
-                lifecycleScope.launchWhenCreated {
+                binding.albumImage.setImageBitmap(null)
+                lifecycleScope.launch {
                     loadAlbumCover(item) { Glide.with(requireContext()).load(it).into(binding.albumImage) }
                 }
             }
@@ -48,11 +50,8 @@ class MusicListFragment : BaseFragment() {
     }
 
     private fun observe() {
-        viewModel.musicVideo.observe(viewLifecycleOwner) {
-        }
-        state.musics.observe(viewLifecycleOwner) {
-            adapter.data = it
-        }
+        viewModel.musicVideo.observe(viewLifecycleOwner) {}
+        state.musics.observe(viewLifecycleOwner) { adapter.data = it }
         state.progress.observe(viewLifecycleOwner) {
             SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
         }

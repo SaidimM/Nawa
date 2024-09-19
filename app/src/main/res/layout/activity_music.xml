@@ -23,6 +23,7 @@
                 app:navigationIconTint="?attr/colorOnPrimary"
                 app:navigationIcon="@drawable/ic_back"
                 android:id="@+id/toolbar"
+                app:title="@string/music"
                 android:background="@color/transparent"
                 app:titleTextColor="?attr/colorOnPrimary"
                 app:layout_constraintTop_toTopOf="parent"/>
