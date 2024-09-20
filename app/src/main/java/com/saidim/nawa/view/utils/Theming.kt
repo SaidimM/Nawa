@@ -8,7 +8,7 @@ object Theming {
     fun getNotificationActionIcon(action: String, isNotification: Boolean): Int {
         val mediaPlayerHolder = MusicController.getInstance()
         return when (action) {
-            Constants.PLAY_PAUES_ACTION -> if (mediaPlayerHolder.isPlaying) {
+            Constants.PLAY_PAUSE_ACTION -> if (mediaPlayerHolder.isPlaying) {
                 R.drawable.ic_pause
             } else {
                 R.drawable.ic_play

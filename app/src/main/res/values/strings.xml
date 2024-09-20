@@ -32,4 +32,20 @@
     <string name="slider">separator</string>
     <string name="pointer">pointer</string>
     <string name="review_storage">Grant permissions to continue</string>
+
+    <!-- Messages - Errors -->
+    <string name="open_git_pref_summary">Open the project webpage for more info :)</string>
+    <string name="open_details_fragment">Open artist/folder\'s details</string>
+    <string name="error_no_favorites">Add some favorites first.</string>
+    <string name="error_no_music">Add some music first.</string>
+    <string name="error_not_ready">Could not load the music library! :( Unmounting the SD card rebuilds the Android MediaStore database. Try again later.</string>
+    <string name="error_unknown_unsupported">Something went wrong! :( Perhaps the format is unsupported, or the folder is inaccessible (not the app\'s fault!).</string>
+    <string name="error_no_browser">Install a web browser first.</string>
+    <string name="error_bad_id">Play a song first.</string>
+    <string name="error_no_queue">No songs in queue.</string>
+    <string name="error_list_ended">List ended.</string>
+    <string name="error_builtin_eq">An error occurred! Use the system equalizer (if it exists)!</string>
+    <string name="error_sys_eq">System equalizer not available!</string>
+    <string name="error_fs_not_allowed_sum">Error! Turn off battery optimization for MPGO</string>
+    <string name="error_fs_not_allowed">Something went wrong! :( Consider turning off battery optimization in the system settings: Apps &gt; All apps &gt; Music Player GO &gt; Battery &gt; Unrestricted, as it could cause the media player service to stop.</string>
 </resources>

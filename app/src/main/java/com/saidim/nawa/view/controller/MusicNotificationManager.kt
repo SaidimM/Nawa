@@ -14,7 +14,6 @@ import com.saidim.nawa.Constants
 import com.saidim.nawa.R
 import com.saidim.nawa.view.MusicActivity
 import com.saidim.nawa.view.utils.Theming
-import com.saidim.nawa.view.controller.MusicController
 
 @SuppressLint("RestrictedApi")
 class MusicNotificationManager(private val service: MusicPlayerService) {
@@ -53,7 +52,7 @@ class MusicNotificationManager(private val service: MusicPlayerService) {
             .setOngoing(controller.isPlaying)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .addAction(notificationActions.first())
-            .addAction(getNotificationAction(Constants.PLAY_PAUES_ACTION))
+            .addAction(getNotificationAction(Constants.PLAY_PAUSE_ACTION))
             .addAction(getNotificationAction(Constants.NEXT_ACTION))
             .addAction(getNotificationAction(Constants.PRE_ACTION))
             .addAction(getNotificationAction(Constants.CLOSE_ACTION))

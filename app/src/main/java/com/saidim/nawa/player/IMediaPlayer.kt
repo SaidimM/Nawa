@@ -1,6 +1,6 @@
 package com.saidim.nawa.player
 
-interface MediaPlayerInterface {
+interface IMediaPlayer {
     fun onPositionChanged(position: Int)
     fun onStateChanged()
     fun onClose()
