@@ -66,7 +66,21 @@ class PlayerService: Service() {
         override fun onMediaButtonEvent(mediaButtonEvent: Intent?) = handleMediaIntent(mediaButtonEvent)
     }
 
-    private var mMediaSessionCompat: MediaSessionCompat? = null
+    private val mMediaSessionCompat: MediaSessionCompat by lazy {
+        val mediaButtonIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
+        val mediaButtonReceiverComponentName = ComponentName(applicationContext, MediaBtnReceiver::class.java)
+
+        var flags = 0
+        if (Versioning.isMarshmallow()) flags = PendingIntent.FLAG_IMMUTABLE or 0
+        val mediaButtonReceiverPendingIntent = PendingIntent.getBroadcast(applicationContext,
+            0, mediaButtonIntent, flags)
+
+        MediaSessionCompat(this, packageName, mediaButtonReceiverComponentName, mediaButtonReceiverPendingIntent).apply {
+            isActive = true
+            setCallback(mMediaSessionCallback)
+            setMediaButtonReceiver(mediaButtonReceiverPendingIntent)
+        }
+    }
 
     private fun initializeNotificationManager() {
         if (!::notificationManager.isInitialized) {
@@ -76,22 +90,22 @@ class PlayerService: Service() {
 
     fun configureMediaSession() {
 
-        val mediaButtonIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
-        val mediaButtonReceiverComponentName = ComponentName(applicationContext, MediaBtnReceiver::class.java)
-
-        var flags = 0
-        if (Versioning.isMarshmallow()) flags = PendingIntent.FLAG_IMMUTABLE or 0
-        val mediaButtonReceiverPendingIntent = PendingIntent.getBroadcast(applicationContext,
-            0, mediaButtonIntent, flags)
-
-        mMediaSessionCompat = MediaSessionCompat(this, packageName, mediaButtonReceiverComponentName, mediaButtonReceiverPendingIntent).apply {
-            isActive = true
-            setCallback(mMediaSessionCallback)
-            setMediaButtonReceiver(mediaButtonReceiverPendingIntent)
-        }
+//        val mediaButtonIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
+//        val mediaButtonReceiverComponentName = ComponentName(applicationContext, MediaBtnReceiver::class.java)
+//
+//        var flags = 0
+//        if (Versioning.isMarshmallow()) flags = PendingIntent.FLAG_IMMUTABLE or 0
+//        val mediaButtonReceiverPendingIntent = PendingIntent.getBroadcast(applicationContext,
+//            0, mediaButtonIntent, flags)
+//
+//        mMediaSessionCompat = MediaSessionCompat(this, packageName, mediaButtonReceiverComponentName, mediaButtonReceiverPendingIntent).apply {
+//            isActive = true
+//            setCallback(mMediaSessionCallback)
+//            setMediaButtonReceiver(mediaButtonReceiverPendingIntent)
+//        }
     }
 
-    fun getMediaSession(): MediaSessionCompat? = mMediaSessionCompat
+    fun getMediaSession(): MediaSessionCompat = mMediaSessionCompat
 
     override fun onBind(intent: Intent): Binder {
         synchronized(initializeNotificationManager()) {

@@ -66,4 +66,5 @@ dependencies {
     implementation(libs.androidx.palette)
     implementation(libs.bumptech.glide.glide)
     kapt(libs.bumptech.glide.compiler)
+    implementation(libs.coil)
 }

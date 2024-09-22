@@ -54,7 +54,7 @@ object LocalMediaUtils {
                 //song.setName(name);
                 music.singer = singer
                 music.path = path
-                music.duration = duration
+                music.duration = duration.toLong()
                 music.size = size
                 music.id = id
                 music.album = album

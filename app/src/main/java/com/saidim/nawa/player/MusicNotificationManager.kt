@@ -1,6 +1,7 @@
 package com.saidim.nawa.player
 
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Notification
@@ -8,12 +9,16 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.app.NotificationCompat.MediaStyle
+import com.blankj.utilcode.util.Utils
+import com.bumptech.glide.util.Util
 import com.saidim.nawa.Constants
 import com.saidim.nawa.Constants.NEXT_ACTION
 import com.saidim.nawa.Constants.NOTIFICATION_CHANNEL_ID
@@ -105,6 +110,20 @@ class MusicNotificationManager(private val playerService: PlayerService) {
             mNotificationBuilder.setOngoing(mMediaPlayerHolder.isPlaying)
             updatePlayPauseAction()
             with(mNotificationManagerCompat) {
+                if (ActivityCompat.checkSelfPermission(
+                        Utils.getApp(),
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
+                }
                 notify(NOTIFICATION_ID, mNotificationBuilder.build())
             }
         }
@@ -133,7 +152,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
     }
 
     fun updateNotificationContent(onDone: (() -> Unit)? = null) {
-        mMediaPlayerHolder.getMediaMetadataCompat().run {
+        mMediaPlayerHolder.getMediaMetadataCompat()?.run {
             mNotificationBuilder
                 .setContentText(getText(MediaMetadataCompat.METADATA_KEY_ARTIST))
                 .setContentTitle(getText(MediaMetadataCompat.METADATA_KEY_TITLE))
@@ -187,6 +206,20 @@ class MusicNotificationManager(private val playerService: PlayerService) {
                 .bigText(playerService.getString(R.string.error_fs_not_allowed)))
             .priority = NotificationCompat.PRIORITY_DEFAULT
         with(NotificationManagerCompat.from(playerService)) {
+            if (ActivityCompat.checkSelfPermission(
+                    Utils.getApp(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             notify(Constants.NOTIFICATION_ERROR_ID, notificationBuilder.build())
         }
     }

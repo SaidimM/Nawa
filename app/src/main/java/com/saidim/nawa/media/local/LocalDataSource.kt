@@ -96,8 +96,11 @@ class LocalDataSource(private val database: NawaDatabase) {
     }
 
     fun getMusicList() = flow {
+        LogUtil.d(TAG, "getMusicList")
         val local = LocalMediaUtils.getMusic(Utils.getApp())
+        LogUtil.d(TAG, "local musics: " + local.size)
         val fromDatabase = musicDao.getAll()
+        LogUtil.d(TAG, "from database: " + fromDatabase.size)
         val savedInBase = mutableListOf<Music>()
         val storedFromLocal = mutableListOf<Music>()
         local.forEach { item -> fromDatabase.find { music -> music.id == item.id }?.let { savedInBase.add(it) } }

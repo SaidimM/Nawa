@@ -19,11 +19,10 @@
         <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
                 app:navigationIconTint="?attr/colorOnPrimary"
-                app:navigationIcon="@drawable/ic_back"
                 android:id="@+id/toolbar"
                 app:title="@string/music"
+                android:fitsSystemWindows="true"
                 android:background="@color/transparent"
                 app:titleTextColor="?attr/colorOnPrimary"
                 app:layout_constraintTop_toTopOf="parent"/>
