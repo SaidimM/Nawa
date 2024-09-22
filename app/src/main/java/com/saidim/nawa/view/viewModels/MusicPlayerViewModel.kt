@@ -11,13 +11,12 @@ import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.remote.lyrics.Lyric
 import com.saidim.nawa.view.enums.PlayerViewState
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MusicPlayerViewModel : ViewModel() {
     private val TAG = "MusicPlayerViewModel"
 
-    private val repository = ServiceLocator.provideMusicRepository()
+    private val repository = ServiceLocator.getRepository()
 
     private var _lyrics = MutableLiveData<ArrayList<Lyric>>()
     val lyrics: LiveData<ArrayList<Lyric>> = _lyrics

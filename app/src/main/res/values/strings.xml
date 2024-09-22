@@ -32,6 +32,9 @@
     <string name="slider">separator</string>
     <string name="pointer">pointer</string>
     <string name="review_storage">Grant permissions to continue</string>
+    <string name="repeat_enabled">Single repetition on.</string>
+    <string name="repeat_loop_enabled">∞ repeat on.</string>
+    <string name="repeat_disabled">∞ repeat off.</string>
 
     <!-- Messages - Errors -->
     <string name="open_git_pref_summary">Open the project webpage for more info :)</string>

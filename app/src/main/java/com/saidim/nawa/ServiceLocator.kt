@@ -21,9 +21,9 @@ object ServiceLocator {
         return MusicRepository(localDataSource, remoteDataSource)
     }
 
-    fun provideMusicRepository() = repository ?: getMusicRepository()
+    fun getRepository() = repository ?: getMusicRepository()
 
     fun provideMusicPlayer() = playerController ?: PlayerController()
 
-    fun provicePreference() = preference ?: Preference()
+    fun getPreference() = preference ?: Preference()
 }

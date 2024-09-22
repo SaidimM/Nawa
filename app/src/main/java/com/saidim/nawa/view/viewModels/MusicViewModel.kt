@@ -18,7 +18,7 @@ import java.io.File
 class MusicViewModel : ViewModel() {
     private val TAG = "MusicViewModel"
 
-    private val repository = ServiceLocator.provideMusicRepository()
+    private val repository = ServiceLocator.getRepository()
     private val musicPlayer = ServiceLocator.provideMusicPlayer()
 
     private var index: Int = 0

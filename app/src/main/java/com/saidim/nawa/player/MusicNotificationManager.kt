@@ -24,13 +24,12 @@ import com.saidim.nawa.Constants.PREV_ACTION
 import com.saidim.nawa.R
 import com.saidim.nawa.ServiceLocator
 import com.saidim.nawa.media.models.NotificationAction
-import com.saidim.nawa.media.pref.Preference
 import com.saidim.nawa.view.MusicActivity
 import com.saidim.nawa.view.utils.Theming
 import com.saidim.nawa.view.utils.Versioning
 
 
-class MusicNotificationManager(private val playerService: PlayService) {
+class MusicNotificationManager(private val playerService: PlayerService) {
 
     private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
 
@@ -45,7 +44,7 @@ class MusicNotificationManager(private val playerService: PlayService) {
     private fun getPendingIntent(playerAction: String): PendingIntent {
         val intent = Intent().apply {
             action = playerAction
-            component = ComponentName(playerService, PlayService::class.java)
+            component = ComponentName(playerService, PlayerService::class.java)
         }
         var flags = PendingIntent.FLAG_UPDATE_CURRENT
         if (Versioning.isMarshmallow()) {
@@ -54,7 +53,7 @@ class MusicNotificationManager(private val playerService: PlayService) {
         return PendingIntent.getService(playerService, NOTIFICATION_INTENT_REQUEST_CODE, intent, flags)
     }
 
-    private val notificationActions: NotificationAction get() = ServiceLocator.provicePreference().notificationActions
+    private val notificationActions: NotificationAction get() = ServiceLocator.getPreference().notificationActions
 
     fun createNotification(onCreated: (Notification) -> Unit) {
 

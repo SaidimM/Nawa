@@ -7,12 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.saidim.nawa.ServiceLocator
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.remote.mv.MusicVideoResult
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MusicListViewModel : ViewModel() {
 
-    private val repository = ServiceLocator.provideMusicRepository()
+    private val repository = ServiceLocator.getRepository()
     var index: Int = 0
 
     private var _musicVideo: MutableLiveData<MusicVideoResult> = MutableLiveData()
