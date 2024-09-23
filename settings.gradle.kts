@@ -1,9 +1,9 @@
 pluginManagement {
     repositories {
+        maven {
+            setUrl("https://maven.aliyun.com/repository/public")
+        }
         google {
-            maven {
-                setUrl("https://maven.aliyun.com/repository/public")
-            }
             content {
                 includeGroupByRegex("com\\.android.*")
                 includeGroupByRegex("com\\.google.*")
