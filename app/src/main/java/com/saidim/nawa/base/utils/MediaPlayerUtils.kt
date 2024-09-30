@@ -1,4 +1,4 @@
-package com.saidim.nawa.player
+package com.saidim.nawa.base.utils
 
 
 import android.annotation.TargetApi

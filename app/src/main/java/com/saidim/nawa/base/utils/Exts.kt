@@ -1,6 +1,5 @@
 package com.saidim.nawa.base.utils
 
-import android.app.Service
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
@@ -12,8 +11,8 @@ import coil.Coil
 import coil.request.ImageRequest
 import com.saidim.nawa.ServiceLocator
 import com.saidim.nawa.media.local.bean.Music
-import com.saidim.nawa.media.pref.Preference
 import java.util.regex.Pattern
+import kotlin.random.Random
 
 fun String.toFilenameWithoutExtension() = try {
     Pattern.compile("(?<=.)\\.[^.]+$").matcher(this).replaceAll("")
@@ -46,4 +45,12 @@ fun Long.waitForCover(context: Context, onDone: (Bitmap?, Boolean) -> Unit) {
             )
             .build()
     )
+}
+
+fun <T> List<T>.getRandomItem(): T {
+    if (this.isEmpty()) {
+        throw NoSuchElementException("List is empty")
+    }
+    val randomIndex = Random.nextInt(this.size)
+    return this[randomIndex]
 }

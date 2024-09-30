@@ -19,7 +19,7 @@ class MusicViewModel : ViewModel() {
     private val TAG = "MusicViewModel"
 
     private val repository = ServiceLocator.getRepository()
-    private val musicPlayer = ServiceLocator.provideMusicPlayer()
+    private val musicPlayer = ServiceLocator.getPlayer()
 
     private var index: Int = 0
 
@@ -65,28 +65,17 @@ class MusicViewModel : ViewModel() {
 
     fun playMusic(position: Int = index) {
         LogUtil.d(TAG, "playMusic, position: $position")
-        index = position
-        saveCurrentMusic()
-        val item = musics.value!![position]
-        if (item.id != music.value?.id) {
-            _playState.value = PlayState.PLAYING
-            _music.value = item
-            musicPlayer.play()
-        } else if (item.id == music.value?.id) {
-            _playState.value = PlayState.PAUSED
-            musicPlayer.pause()
-        }
+        musicPlayer.updateCurrentMusic(musicPlayer.getCurrentList()[position])
     }
 
     fun onPlayPressed() {
-        _playState.postValue(if (playState.value == PlayState.PLAYING) PlayState.PAUSED else PlayState.PLAYING)
         playMusic()
     }
 
-    fun seekTo(position: Long) = musicPlayer.seekTo(position)
+    fun seekTo(position: Int) = musicPlayer.seekTo(position)
 
     fun onNextPressed() {
-        musicPlayer.next()
+        musicPlayer.playNext()
         _music.postValue(musicPlayer.getCurrentMusic())
     }
 
@@ -111,6 +100,6 @@ class MusicViewModel : ViewModel() {
     }
 
     fun recyclePlayer() {
-        musicPlayer.recycle()
+        musicPlayer.releasePlayer()
     }
 }

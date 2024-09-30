@@ -12,6 +12,7 @@ import com.saidim.nawa.media.remote.music.MusicDetailResult
 import com.saidim.nawa.media.remote.search.Song
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
@@ -38,7 +39,7 @@ class MusicRepository(
 
     override fun removeMusicFromDevice(music: Music) = localDataSource.removeMusic(music).flowOn(dispatcher)
 
-    @OptIn(FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getMusicLyrics(music: Music) =
         if (music.mediaId.isEmpty()) remoteDataSource.searchMusic(music).filter { it.isSuccess }
             .flatMapConcat { result -> localDataSource.syncWithRemote(music, result.getOrNull() as Song) }
@@ -70,7 +71,7 @@ class MusicRepository(
 
     override fun getMusicVideo(music: Music) = remoteDataSource.getMv(music).flowOn(dispatcher)
 
-    @OptIn(FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAlbumCover(music: Music) =
         if (music.mediaId.isEmpty()) remoteDataSource.searchMusic(music).filter { it.isSuccess }
             .flatMapConcat { localDataSource.syncWithRemote(music, it.getOrNull() as Song) }

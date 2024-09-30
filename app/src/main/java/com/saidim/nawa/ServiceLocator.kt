@@ -6,24 +6,22 @@ import com.saidim.nawa.media.local.LocalDataSource
 import com.saidim.nawa.media.local.database.NawaDatabase
 import com.saidim.nawa.media.pref.Preference
 import com.saidim.nawa.media.remote.RemoteDataSource
-import com.saidim.nawa.view.controller.IPlayerController
-import com.saidim.nawa.view.controller.PlayerController
+import com.saidim.nawa.player.IPlayerController
+import com.saidim.nawa.player.PlayerController
 
 object ServiceLocator {
-    private val repository: IMusicRepository? = null
-    private val playerController: IPlayerController? = null
-    private val preference: Preference? = null
-
-    private fun getMusicRepository(): IMusicRepository {
+    private val nawaRepository: IMusicRepository by lazy {
         val database = NawaDatabase.getInstance()
         val localDataSource = LocalDataSource(database)
         val remoteDataSource = RemoteDataSource()
-        return MusicRepository(localDataSource, remoteDataSource)
+        MusicRepository(localDataSource, remoteDataSource)
     }
+    private val nawaPreference: Preference by lazy { Preference() }
+    private val nawaPayer: IPlayerController by lazy { PlayerController.getInstance() }
 
-    fun getRepository() = repository ?: getMusicRepository()
+    fun getRepository(): IMusicRepository = nawaRepository
 
-    fun provideMusicPlayer() = playerController ?: PlayerController()
+    fun getPreference() = nawaPreference
 
-    fun getPreference() = preference ?: Preference()
+    fun getPlayer() = nawaPayer
 }

@@ -11,7 +11,36 @@ object Constants {
 
     val bezierInterpolator = EaseCubicInterpolator(0.25f, 0.25f, 0.15f, 1f)
 
+    const val SEEKBAR_UPDATE_INTERVAL = 1000L
+
     const val MUSIC_ID = "MUSIC_ID"
+
+    // volume
+    // The volume we set the media player to when we lose audio focus, but are
+    // allowed to reduce the volume instead of stopping playback.
+    const val VOLUME_DUCK = 0.2f
+
+    // The volume we set the media player when we have audio focus.
+    const val VOLUME_NORMAL = 1.0f
+
+    // We don't have audio focus, can't play
+    const val AUDIO_FOCUS_FAILED = -1
+
+    // We don't have audio focus, and can't duck (play at a low volume)
+    const val AUDIO_NO_FOCUS_NO_DUCK = 0
+
+    // We don't have focus, but can duck (play at a low volume)
+    const val AUDIO_NO_FOCUS_CAN_DUCK = 1
+
+    // We have full audio focus
+    const val AUDIO_FOCUSED = 2
+
+    // We don't have focus, but we can resume
+    const val AUDIO_FOCUS_LOSS_TRANSIENT = 3
+
+    // The headset connection states (0,1)
+    const val HEADSET_DISCONNECTED = 0
+    const val HEADSET_CONNECTED = 1
 
     const val NOTIFICATION_CHANNEL_ID: String = "NOTIFICATION_CHANNEL_ID"
     const val CLOSE_ACTION: String = "CLOSE_ACTION"

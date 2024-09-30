@@ -18,7 +18,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.app.NotificationCompat.MediaStyle
 import com.blankj.utilcode.util.Utils
-import com.bumptech.glide.util.Util
 import com.saidim.nawa.Constants
 import com.saidim.nawa.Constants.NEXT_ACTION
 import com.saidim.nawa.Constants.NOTIFICATION_CHANNEL_ID
@@ -34,9 +33,8 @@ import com.saidim.nawa.view.utils.Theming
 import com.saidim.nawa.view.utils.Versioning
 
 
-class MusicNotificationManager(private val playerService: PlayerService) {
-
-    private val mMediaPlayerHolder get() = MediaPlayerHolder.getInstance()
+class PlayerNotificationManager(private val playerService: PlayerService) {
+    private val playerController get() = PlayerController.getInstance()
 
     //notification manager/builder
     private lateinit var mNotificationBuilder: NotificationCompat.Builder
@@ -88,16 +86,17 @@ class MusicNotificationManager(private val playerService: PlayerService) {
             .setShowWhen(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setLargeIcon(null)
-            .setOngoing(mMediaPlayerHolder.isPlaying)
+            .setOngoing(playerController.isPlaying())
             .setSmallIcon(R.drawable.ic_music_note)
             .addAction(getNotificationAction(notificationActions.first))
             .addAction(getNotificationAction(PREV_ACTION))
             .addAction(getNotificationAction(PLAY_PAUSE_ACTION))
             .addAction(getNotificationAction(NEXT_ACTION))
             .addAction(getNotificationAction(notificationActions.second))
-            .setStyle(MediaStyle()
-                .setMediaSession(playerService.getMediaSession().sessionToken)
-                .setShowActionsInCompactView(1, 2, 3)
+            .setStyle(
+                MediaStyle()
+                    .setMediaSession(playerService.getMediaSession().sessionToken)
+                    .setShowActionsInCompactView(1, 2, 3)
             )
 
         updateNotificationContent {
@@ -107,7 +106,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
 
     fun updateNotification() {
         if (::mNotificationBuilder.isInitialized) {
-            mNotificationBuilder.setOngoing(mMediaPlayerHolder.isPlaying)
+            mNotificationBuilder.setOngoing(playerController.isPlaying())
             updatePlayPauseAction()
             with(mNotificationManagerCompat) {
                 if (ActivityCompat.checkSelfPermission(
@@ -152,7 +151,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
     }
 
     fun updateNotificationContent(onDone: (() -> Unit)? = null) {
-        mMediaPlayerHolder.getMediaMetadataCompat()?.run {
+        playerService.mediaMetadataCompat.run {
             mNotificationBuilder
                 .setContentText(getText(MediaMetadataCompat.METADATA_KEY_ARTIST))
                 .setContentTitle(getText(MediaMetadataCompat.METADATA_KEY_TITLE))
@@ -165,7 +164,7 @@ class MusicNotificationManager(private val playerService: PlayerService) {
     fun updatePlayPauseAction() {
         if (::mNotificationBuilder.isInitialized) {
             mNotificationActions[2] =
-                getNotificationAction(Constants.PLAY_PAUSE_ACTION)
+                getNotificationAction(PLAY_PAUSE_ACTION)
         }
     }
 
@@ -202,8 +201,10 @@ class MusicNotificationManager(private val playerService: PlayerService) {
             .setSilent(true)
             .setContentTitle(playerService.getString(R.string.error_fs_not_allowed_sum))
             .setContentText(playerService.getString(R.string.error_fs_not_allowed))
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText(playerService.getString(R.string.error_fs_not_allowed)))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(playerService.getString(R.string.error_fs_not_allowed))
+            )
             .priority = NotificationCompat.PRIORITY_DEFAULT
         with(NotificationManagerCompat.from(playerService)) {
             if (ActivityCompat.checkSelfPermission(
