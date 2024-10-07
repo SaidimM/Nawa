@@ -21,10 +21,10 @@
                 android:layout_height="wrap_content"
                 app:navigationIconTint="?attr/colorOnPrimary"
                 android:id="@+id/toolbar"
-                app:title="@string/music"
+                app:title="@string/app_name"
                 android:fitsSystemWindows="true"
                 android:background="@color/transparent"
-                app:titleTextColor="?attr/colorOnPrimary"
+                app:titleTextColor="?attr/colorOnPrimaryContainer"
                 app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.fragment.app.FragmentContainerView

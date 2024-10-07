@@ -5,15 +5,13 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
 import com.blankj.utilcode.util.ArrayUtils
 import com.blankj.utilcode.util.Utils
 import com.saidim.nawa.Constants.LYRIC_DIR
-import com.saidim.nawa.media.local.bean.AlbumItemModel
-import com.saidim.nawa.media.local.bean.ImgFolderBean
 import com.saidim.nawa.media.local.bean.Music
-import com.saidim.nawa.media.local.bean.Video
 import com.saidim.nawa.media.local.enums.MediaType
 import java.io.*
 import java.util.*
@@ -190,167 +188,26 @@ object LocalMediaUtils {
         return content
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    suspend fun getVideos(): List<Video> {
-        val videos: MutableList<Video> = ArrayList()
-        var c: Cursor? = null
+    fun getAlbumArtBitmap(musicFilePath: String): Bitmap? {
+        val retriever = MediaMetadataRetriever()
         try {
-            // String[] mediaColumns = { "_id", "_data", "_display_name",
-            // "_size", "date_modified", "duration", "resolution" };
-            c = Utils.getApp().contentResolver.query(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                null,
-                null,
-                null,
-                MediaStore.Video.Media.DEFAULT_SORT_ORDER
-            )
-            if (c == null) return emptyList()
-            while (c.moveToNext()) {
-                val path = c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)) // 路径
-                if (!File(path).exists()) {
-                    continue
-                }
-                val id = c.getInt(c.getColumnIndexOrThrow(MediaStore.Video.Media._ID)) // 视频的id
-                val name =
-                    c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)) // 视频名称
-                val resolution =
-                    c.getString(c.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION)) //分辨率
-                val size = c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)) // 大小
-                val duration =
-                    c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)) // 时长
-                val date =
-                    c.getLong(c.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)) //修改时间
-                val video = Video(id, path, name, resolution, size, date, duration)
-                videos.add(video)
+            retriever.setDataSource(musicFilePath)  // Set the file path as the data source
+
+            // Extract the embedded album art as a byte array
+            val art: ByteArray? = retriever.embeddedPicture
+
+            // If album art is available, convert it to a Bitmap and return
+            return if (art != null) {
+                BitmapFactory.decodeByteArray(art, 0, art.size)
+            } else {
+                null  // Return null if no album art is found
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.printStackTrace()  // Handle any errors that occur during metadata extraction
+            return null
         } finally {
-            c?.close()
+            retriever.release()  // Always release the retriever when done
         }
-        return videos
     }
 
-    // 获取视频缩略图
-    fun getVideoThumbnail(id: Int): Bitmap? {
-        var bitmap: Bitmap? = null
-        val options = BitmapFactory.Options()
-        options.inDither = false
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888
-        bitmap = MediaStore.Video.Thumbnails.getThumbnail(
-            Utils.getApp().contentResolver,
-            id.toLong(),
-            MediaStore.Images.Thumbnails.MICRO_KIND,
-            options
-        )
-        return bitmap
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /**
-     * 得到图片文件夹集合
-     */
-    private fun getImageFolders(): ArrayList<ImgFolderBean> {
-        val folders: ArrayList<ImgFolderBean> = arrayListOf()
-        // 扫描图片
-        var c: Cursor? = null
-        try {
-            c = Utils.getApp().contentResolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                null,
-                MediaStore.Images.Media.MIME_TYPE + "= ? or " + MediaStore.Images.Media.MIME_TYPE + "= ? or " + MediaStore.Images.Media.MIME_TYPE + "= ?",
-                arrayOf("image/jpeg", "image/png", "image/webp"),
-                MediaStore.Images.Media.DATE_MODIFIED
-            )
-            if (c == null) return folders
-            val mDirs: MutableList<String> = ArrayList() //用于保存已经添加过的文件夹目录
-            while (c.moveToNext()) {
-                val index = c.getColumnIndex(MediaStore.Images.Media.DATA)
-                val path = c.getString(index) // 路径
-                val parentFile = File(path).parentFile ?: continue
-                val dir = parentFile.absolutePath
-                if (mDirs.contains(dir)) //如果已经添加过
-                    continue
-                mDirs.add(dir) //添加到保存目录的集合中
-                val folderBean = ImgFolderBean()
-                folderBean.dir = dir
-                folderBean.fistImgPath = path
-                if (parentFile.list() == null) continue
-                val count: Int = parentFile.list { _, filename ->
-                    filename.endsWith(".jpeg") || filename.endsWith(".jpg") || filename.endsWith(".png") || filename.endsWith(
-                        ".webp"
-                    )
-                }!!.size
-                folderBean.count = count
-                folders.add(folderBean)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            c?.close()
-        }
-        return folders
-    }
-
-    /**
-     * 通过图片文件夹的路径获取该目录下的图片
-     */
-    private fun getImgListByDir(dir: String): ArrayList<File> {
-        val imgPaths = ArrayList<File>()
-        val directory = File(dir)
-        if (!directory.exists()) {
-            return imgPaths
-        }
-        val files = directory.listFiles() ?: return imgPaths
-        for (file in files) {
-            if (isPicFile(file.path)) {
-                imgPaths.add(file)
-            }
-        }
-        return imgPaths
-    }
-
-    private fun isPicFile(file: String): Boolean {
-        //文件名后缀，即文件类型
-        val index = file.lastIndexOf(".")
-        if (index == -1) return false
-        val suffixName = file.substring(index)
-        val s = arrayOf(".jpg", ".png", ".jpeg", ".webp")
-        return ArrayUtils.contains(s, suffixName.lowercase(Locale.getDefault()))
-    }
-
-    private fun getFileListByFolder(folder: ImgFolderBean): ArrayList<AlbumItemModel> {
-        val models = arrayListOf<AlbumItemModel>()
-        val files: ArrayList<File> = getImgListByDir(folder.dir)
-        try {
-            files.forEach { file ->
-                val model = AlbumItemModel(
-                    mediaType = MediaType.IMAGE,
-                    uri = Uri.fromFile(file),
-                    path = file.path,
-                    isSelected = false,
-                    foldrName = if (file.parent == null) "" else file.parent.toString(),
-                    createdTime = file.lastModified(),
-                    lastEditedTime = file.lastModified(),
-                    lastAccessTime = file.lastModified()
-                )
-                models.add(model)
-                LogUtil.d(TAG, model.toString())
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return models
-    }
-
-    fun getAllImageFiles(): ArrayList<AlbumItemModel> {
-        val files = arrayListOf<AlbumItemModel>()
-        val folders = getImageFolders()
-        folders.forEach { files.addAll(getFileListByFolder(it)) }
-        files.sortBy { -it.createdTime }
-        return files
-    }
 }

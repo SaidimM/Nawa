@@ -27,7 +27,7 @@
         <!-- Status bar color. -->
         <item name="android:windowTranslucentStatus">true</item>
 
-        <item name="android:windowBackground">?attr/colorOnSurface</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
 
         <!-- Font family. -->
         <item name="fontFamily">@font/opensans_font</item>

@@ -2,27 +2,79 @@ package com.saidim.nawa.view.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.blankj.utilcode.util.SnackbarUtils
 import com.bumptech.glide.Glide
 import com.saidim.nawa.R
 import com.saidim.nawa.base.ui.pge.BaseFragment
 import com.saidim.nawa.base.ui.pge.BaseRecyclerViewAdapter
-import com.saidim.nawa.base.utils.ViewUtils.loadAlbumCover
+import com.saidim.nawa.base.utils.LocalMediaUtils.getAlbumArtBitmap
 import com.saidim.nawa.databinding.FragmentMusicListBinding
-import com.saidim.nawa.databinding.ItemSongBinding
+import com.saidim.nawa.databinding.LayoutItemArtistBinding
 import com.saidim.nawa.media.local.bean.Music
+import com.saidim.nawa.media.local.bean.PlayList
+import com.saidim.nawa.view.models.ArtistModel
+import com.saidim.nawa.view.models.RecentModel
 import com.saidim.nawa.view.viewModels.MusicListViewModel
 import com.saidim.nawa.view.viewModels.MusicViewModel
-import kotlinx.coroutines.launch
 
 class MusicListFragment : BaseFragment() {
     override val binding: FragmentMusicListBinding by lazy { FragmentMusicListBinding.inflate(layoutInflater) }
 
     private val viewModel: MusicListViewModel by lazy { getFragmentScopeViewModel(MusicListViewModel::class.java) }
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
-    private lateinit var adapter: BaseRecyclerViewAdapter<Music, ItemSongBinding>
+
+    private val artistAdapter: BaseRecyclerViewAdapter<ArtistModel, LayoutItemArtistBinding> by lazy {
+        object :
+            BaseRecyclerViewAdapter<ArtistModel, LayoutItemArtistBinding>(requireContext()) {
+            override fun getResourceId(viewType: Int) = R.layout.layout_item_artist
+
+            override fun onBindItem(binding: LayoutItemArtistBinding, item: ArtistModel, position: Int) {
+                binding.songImage.background = null
+                binding.artistName.text = item.name
+                Glide.with(requireContext()).load(item.imageUri).into(binding.songImage)
+            }
+        }
+    }
+
+    private val songAdapter: BaseRecyclerViewAdapter<Music, LayoutItemArtistBinding> by lazy {
+        object :
+            BaseRecyclerViewAdapter<Music, LayoutItemArtistBinding>(requireContext()) {
+            override fun getResourceId(viewType: Int) = R.layout.layout_item_artist
+
+            override fun onBindItem(binding: LayoutItemArtistBinding, item: Music, position: Int) {
+                binding.songImage.background = null
+                binding.artistName.text = item.name
+                val albumCover = getAlbumArtBitmap(item.path)
+                Glide.with(requireContext()).load(albumCover).into(binding.songImage)
+            }
+        }
+    }
+
+    private val recentAdapter: BaseRecyclerViewAdapter<RecentModel, LayoutItemArtistBinding> by lazy {
+        object :
+            BaseRecyclerViewAdapter<RecentModel, LayoutItemArtistBinding>(requireContext()) {
+            override fun getResourceId(viewType: Int) = R.layout.layout_item_artist
+
+            override fun onBindItem(binding: LayoutItemArtistBinding, item: RecentModel, position: Int) {
+                binding.songImage.background = null
+                binding.artistName.text = item.name
+                Glide.with(requireContext()).load(item.image).into(binding.songImage)
+            }
+        }
+    }
+
+    private val playListAdapter: BaseRecyclerViewAdapter<PlayList, LayoutItemArtistBinding> by lazy {
+        object :
+            BaseRecyclerViewAdapter<PlayList, LayoutItemArtistBinding>(requireContext()) {
+            override fun getResourceId(viewType: Int) = R.layout.layout_item_artist
+
+            override fun onBindItem(binding: LayoutItemArtistBinding, item: PlayList, position: Int) {
+                binding.songImage.background = null
+                binding.artistName.text = item.name
+                Glide.with(requireContext()).load(item.cover).into(binding.songImage)
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,27 +83,12 @@ class MusicListFragment : BaseFragment() {
     }
 
     private fun initRecyclerView() {
-        adapter = object : BaseRecyclerViewAdapter<Music, ItemSongBinding>(requireContext()) {
-            override fun getResourceId(viewType: Int) = R.layout.item_song
-            override fun onBindItem(binding: ItemSongBinding, item: Music, position: Int) {
-                binding.song = item
-                binding.albumImage.background = null
-                binding.mv.visibility = if (item.mvId == 0) View.GONE else View.VISIBLE
-                binding.mv.setOnClickListener { viewModel.getMv(item) }
-                binding.root.setOnClickListener { state.playMusic(position) }
-                binding.albumImage.setImageBitmap(null)
-                lifecycleScope.launch {
-                    loadAlbumCover(item) { Glide.with(requireContext()).load(it).into(binding.albumImage) }
-                }
-            }
-        }
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
     }
 
     private fun observe() {
         viewModel.musicVideo.observe(viewLifecycleOwner) {}
-        state.musics.observe(viewLifecycleOwner) { adapter.data = it }
+        state.musics.observe(viewLifecycleOwner) { }
         state.progress.observe(viewLifecycleOwner) {
             SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
         }
