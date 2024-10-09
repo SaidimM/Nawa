@@ -1,10 +1,10 @@
 package com.saidim.nawa.view
 
+import LogUtil
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import com.saidim.nawa.R
 import com.saidim.nawa.base.ui.pge.BaseActivity
 import com.saidim.nawa.databinding.ActivityMusicBinding
 import com.saidim.nawa.view.enums.ControllerState

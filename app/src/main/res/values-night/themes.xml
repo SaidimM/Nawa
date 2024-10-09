@@ -2,11 +2,28 @@
     <!-- Base application theme. -->
     <style name="Theme.Nawa" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/teal_500</item>
-        <item name="colorPrimaryVariant">@color/teal_50</item>
-        <item name="colorPrimaryDark">@color/teal_800</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorOnSurface">@color/gray_900</item>
+        <item name="colorPrimary">@color/dark_primary</item>
+        <item name="colorOnPrimary">@color/dark_on_primary</item>
+        <item name="colorPrimaryContainer">@color/dark_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/dark_on_primary_container</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/dark_secondary</item>
+        <item name="colorOnSecondary">@color/dark_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/dark_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/dark_on_secondary_container</item>
+
+        <!-- Surface color. -->
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorSurfaceContainer">@color/dark_surface_container</item>
+        <item name="colorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="colorOnSurface">@color/dark_on_surface</item>
+
+        <!-- Error color. -->
+        <item name="colorError">@color/dark_error</item>
+        <item name="colorOnError">@color/dark_on_error</item>
+        <item name="colorErrorContainer">@color/dark_error_container</item>
+        <item name="colorOnErrorContainer">@color/dark_on_error_container</item>
 
         <item name="colorAccent">@color/purple_100</item>
 
@@ -15,7 +32,7 @@
         <!-- Status bar color. -->
         <item name="android:windowTranslucentStatus">true</item>
 
-        <item name="android:windowBackground">?attr/colorOnSurface</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
 
         <!-- Font family. -->
         <item name="fontFamily">@font/opensans_font</item>

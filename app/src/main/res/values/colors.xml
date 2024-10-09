@@ -179,4 +179,24 @@
     <color name="error_container">#FFDAD6</color>
     <color name="on_error">#FFFFFF</color>
     <color name="on_error_container">#011211</color>
+
+    <color name="dark_primary">#80CBC4</color>
+    <color name="dark_on_primary">#014D40</color>
+    <color name="dark_primary_container">#00796A</color>
+    <color name="dark_on_primary_container">#E0F2F1</color>
+
+    <color name="dark_secondary">#014D40</color>
+    <color name="dark_on_secondary">#E0F2F1</color>
+    <color name="dark_secondary_container">#3E6F5C</color>
+    <color name="dark_on_secondary_container">#BADBD1</color>
+
+    <color name="dark_surface">#151515</color>
+    <color name="dark_surface_container">#272727</color>
+    <color name="dark_surface_variant">#4C5A58</color>
+    <color name="dark_on_surface">#E1F2F1</color>
+
+    <color name="dark_error">#BA1A1A</color>
+    <color name="dark_error_container">#FFDAD6</color>
+    <color name="dark_on_error">#FFFFFF</color>
+    <color name="dark_on_error_container">#011211</color>
 </resources>

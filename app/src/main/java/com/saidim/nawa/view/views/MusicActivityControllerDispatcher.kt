@@ -34,7 +34,7 @@ class MusicActivityControllerDispatcher(
                 binding.cardView.animate().alphaBy(0f).alpha(1f).setDuration(1000)
                     .setListeners(onStart = { binding.cardView.visibility = View.VISIBLE },
                         onEnd = { viewModel.updateControllerState(ControllerState.COLLAPSED) }).start()
-                binding.fragmentList.setMargins(0, 0, 0, 104.dp)
+//                binding.fragmentList.setMargins(0, 0, 0, 104.dp)
             }
 
             ControllerState.HIDDEN -> binding.cardView.alpha = 0f

@@ -41,6 +41,7 @@ class PlayerController : IPlayerController {
     private val updateIndexTask by lazy { Runnable { listener.onIndexChanged(mediaPlayer.currentPosition) } }
 
     private val isPlayerInitialized get() = ::mediaPlayer.isInitialized
+    private val isPlayServiceInitialized get() = ::playerService.isInitialized
     private val isPlayerListenerInitialized get() = ::listener.isInitialized
     private val isAudioFocusRequestCompatInitialized get() = ::audioFocusRequestCompat.isInitialized
     private val isAudioManagerInitialized get() = ::audioManager.isInitialized
@@ -218,7 +219,7 @@ class PlayerController : IPlayerController {
             looseAudioFocus()
             stopSyncPlayerIndex()
         }
-        playerService.notificationManager.cancelNotification()
+        if (isPlayServiceInitialized) playerService.notificationManager.cancelNotification()
         state = PlayState.IDLE
         unregisterActionReceiver()
     }
@@ -308,7 +309,7 @@ class PlayerController : IPlayerController {
 
     private fun unregisterActionReceiver() {
         try {
-            playerService.applicationContext.unregisterReceiver(playerReceiver)
+            if (isPlayServiceInitialized) playerService.applicationContext.unregisterReceiver(playerReceiver)
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
             LocalBroadcastManager.getInstance(playerService).unregisterReceiver(playerReceiver)

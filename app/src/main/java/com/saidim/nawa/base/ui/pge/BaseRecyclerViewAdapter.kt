@@ -1,5 +1,6 @@
 package com.saidim.nawa.base.ui.pge
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseRecyclerViewAdapter<T, B : ViewDataBinding>(private val context: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var data: List<T> = listOf()
+        @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
-            field.forEachIndexed { index, _ -> notifyItemChanged(index) }
+            notifyDataSetChanged()
         }
 
     protected abstract fun getResourceId(viewType: Int): Int
