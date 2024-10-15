@@ -55,11 +55,9 @@ class MusicViewModel : ViewModel() {
     private var _controllerState = MutableLiveData(ControllerState.HIDDEN)
     val controllerState: LiveData<ControllerState> = _controllerState
 
-    fun loadMusic() {
+    fun getMusic() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getMusicList()
-                .catch { LogUtil.e(TAG, it.message.toString()) }
-                .collect { _musics.postValue(it) }
+            repository.loadMusics().collect { _musics.postValue(it) }
         }
     }
 
@@ -82,7 +80,6 @@ class MusicViewModel : ViewModel() {
     fun getLastPlayedMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getLastPlayedMusic()
-                .catch { LogUtil.e(TAG, it.message.toString()) }
                 .collect { _music.postValue(it) }
         }
     }

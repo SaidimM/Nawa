@@ -59,4 +59,5 @@
     <string name="text_list_name">list name</string>
     <string name="text_recent">Recent</string>
     <string name="text_recent_name">recent name</string>
+    <string name="text_create">create</string>
 </resources>

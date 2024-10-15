@@ -3,7 +3,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"/>
+        <variable name="preference" type="com.saidim.nawa.media.pref.Preference"/>
+        <variable name="viewModel" type="com.saidim.nawa.view.viewModels.MusicListViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,6 +26,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
+                        android:visibility="@{preference.enableDisplayArtistsInMainWindow ? View.VISIBLE : View.GONE}"
                         android:id="@+id/artist_layout">
 
                     <TextView
@@ -86,6 +89,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
+                        android:visibility="@{preference.enableDisplayRecentInMainWindow ? View.VISIBLE : View.GONE}"
                         android:id="@+id/recent_layout">
 
                     <TextView
@@ -116,7 +120,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
+                        android:paddingVertical="16dp"
+                        android:paddingHorizontal="8dp"
                         android:id="@+id/play_list_layout">
 
                     <TextView
@@ -128,6 +133,21 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             android:textColor="?attr/colorOnPrimaryContainer"/>
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_create"
+                            android:id="@+id/play_list_create"
+                            android:textAllCaps="true"
+                            android:backgroundTint="?attr/colorPrimary"
+                            android:background="@drawable/bg_corner_white_3dp"
+                            android:textSize="16sp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="2dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textColor="?attr/colorOnPrimary"/>
 
                     <androidx.recyclerview.widget.RecyclerView
                             android:layout_width="match_parent"

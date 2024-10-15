@@ -8,8 +8,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="4dp"
-            android:orientation="vertical"
-    >
+            android:orientation="vertical">
 
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
@@ -36,9 +35,9 @@
                 app:layout_constraintTop_toBottomOf="@id/song_image"
                 android:gravity="center_horizontal"
                 android:text="@string/text_song_name"
+                android:textColor="?attr/colorOnPrimaryContainer"
                 android:id="@+id/artist_name"
                 android:textSize="14sp"/>
-
 
     </LinearLayout>
 </layout>

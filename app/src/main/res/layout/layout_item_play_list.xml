@@ -6,7 +6,8 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="4dp"
+            android:paddingHorizontal="8dp"
+            android:paddingBottom="8dp"
             android:orientation="vertical"
     >
 
@@ -30,6 +31,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/song_image"
                 android:gravity="center_horizontal"
+                android:textColor="?attr/colorOnPrimaryContainer"
                 android:text="@string/text_list_name"
                 android:id="@+id/artist_name"
                 android:textSize="14sp"/>

@@ -8,9 +8,10 @@ import com.saidim.nawa.media.remote.lyrics.Lyric
 import kotlinx.coroutines.flow.Flow
 
 interface IMusicRepository {
+    fun loadMusics(): Flow<List<Music>>
     fun getLastPlayedMusic(): Flow<Music>
     fun saveLastPlayedMusic(music: Music)
-    fun getMusicList(): Flow<List<Music>>
+    fun getMusicList(): List<Music>
     fun removeMusicFromDevice(music: Music): Flow<Result<Any>>
     fun getMusicLyrics(music: Music): Flow<List<Lyric>>
     fun getFavoriteMusicList(): Flow<PlayList>

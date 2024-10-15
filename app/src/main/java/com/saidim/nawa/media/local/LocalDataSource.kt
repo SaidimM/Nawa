@@ -175,15 +175,9 @@ class LocalDataSource(private val database: NawaDatabase) {
         }
     }
 
-    fun getAllPlayLists() = flow {
-        val playLists: List<PlayList> = playListDao.getAll()
-        emit(playLists)
-    }
+    fun getAllPlayLists() = flow { emit(playListDao.getAll()) }
 
-    fun getFavoriteMusicList() = flow {
-        val favorites: PlayList = playListDao.getFavorites()
-        emit(favorites)
-    }
+    fun getFavoriteMusicList() = flow { emit(playListDao.getFavorites()) }
 
     fun alterPlayList(playList: PlayList) = flow {
         val result = playListDao.update(playList)
@@ -193,6 +187,7 @@ class LocalDataSource(private val database: NawaDatabase) {
 
     fun addPlayList(playList: PlayList) = flow {
         val result = playListDao.save(playList)
+        LogUtil.d(TAG, "addPlayList: result = $result")
         if (result > 0) emit(Result.success(result))
         else emit(Result.failure(Exception("Add play list failed!")))
     }

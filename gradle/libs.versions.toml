@@ -8,7 +8,7 @@ espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
 utils = "1.31.1"
-bindings = "8.2.2"
+bindings = "8.6.1"
 room = "2.6.1"
 lifecycleExtensions = "2.2.0"
 lifecycle = "2.7.0"
@@ -19,6 +19,7 @@ glide = "4.13.1"
 palette = "1.0.0"
 media = "1.7.0"
 coil = "2.4.0"
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ squareup-moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-co
 bumptech-glide-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 utils = { group = "com.blankj", name = "utilcodex", version.ref = "utils" }
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

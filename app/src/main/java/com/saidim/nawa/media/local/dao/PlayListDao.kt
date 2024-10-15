@@ -11,17 +11,17 @@ import com.saidim.nawa.media.local.bean.PlayList
 interface PlayListDao {
 
     @Insert
-    fun save(playList: PlayList): Long
+    suspend fun save(playList: PlayList): Long
 
     @Delete
-    fun delete(playList: PlayList): Int
+    suspend fun delete(playList: PlayList): Int
 
     @Update
-    fun update(playList: PlayList): Int
+    suspend fun update(playList: PlayList): Int
 
     @Query("SELECT * FROM playlist")
-    fun getAll(): List<PlayList>
+    suspend fun getAll(): List<PlayList>
 
     @Query("SELECT * FROM playlist WHERE name = 'favorite'")
-    fun getFavorites(): PlayList
+    suspend fun getFavorites(): PlayList
 }

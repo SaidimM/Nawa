@@ -26,7 +26,7 @@ class MusicActivity : BaseActivity() {
 
     private fun initData() {
         viewModel.createDirectories()
-        viewModel.loadMusic()
+        viewModel.getMusic()
         viewModel.getLastPlayedMusic()
     }
 
