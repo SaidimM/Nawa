@@ -40,6 +40,9 @@ class MusicViewModel : ViewModel() {
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
+    private var _fragment = MutableLiveData<Int>()
+    val fragment: LiveData<Int> = _fragment
+
     private var _musics = MutableLiveData<List<Music>>()
     val musics: LiveData<List<Music>> = _musics
 
@@ -59,6 +62,10 @@ class MusicViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.loadMusics().collect { _musics.postValue(it) }
         }
+    }
+
+    fun navigateToFragment(fragment: Int) {
+        _fragment.postValue(fragment)
     }
 
     fun playMusic(position: Int = index) {

@@ -5,9 +5,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import com.saidim.nawa.Constants
 import com.saidim.nawa.base.ui.pge.BaseActivity
 import com.saidim.nawa.databinding.ActivityMusicBinding
 import com.saidim.nawa.view.enums.ControllerState
+import com.saidim.nawa.view.fragments.ListFragment
+import com.saidim.nawa.view.fragments.MainFragment
 import com.saidim.nawa.view.viewModels.MusicViewModel
 import com.saidim.nawa.view.views.MusicActivityControllerDispatcher
 import com.saidim.nawa.view.views.MusicControllerGestureDetector
@@ -17,7 +20,11 @@ class MusicActivity : BaseActivity() {
     override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
     private val gestureDetector by lazy { MusicControllerGestureDetector(this, viewModel) }
     private val dispatcher by lazy { MusicActivityControllerDispatcher(binding, viewModel) }
-    private val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private val permissions =
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+    private val mainFragment by lazy { MainFragment() }
+    private val listFargemnt by lazy { ListFragment() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,11 +58,25 @@ class MusicActivity : BaseActivity() {
         viewModel.music.observe(this) { viewModel.updateControllerState(ControllerState.SHOWING) }
         viewModel.controllerState.observe(this) { dispatcher.changeControllerState(it) }
         viewModel.controllerOffset.observe(this) { dispatcher.changeControllerOffset(it) }
+        viewModel.fragment.observe(this) { navigateFragment(it) }
         viewModel.isPermissionGranted.observe(this) {
             LogUtil.d(TAG, "isPermissionGranted: $it")
             initData()
             initView()
         }
+    }
+
+    private fun navigateFragment(name: Int) {
+        val fragment = when (name) {
+            Constants.MAIN_FRAGMENT -> mainFragment
+            Constants.MUSIC_LIST_FRAGMENT -> listFargemnt
+            else -> mainFragment
+        }
+        supportFragmentManager
+            .beginTransaction()
+            .replace(binding.fragment.id, fragment)
+            .apply { addToBackStack(null) }
+            .commit()
     }
 
     fun grantPermissions(view: View) = initPermission(permissions)

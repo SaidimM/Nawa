@@ -5,7 +5,7 @@
     <data>
         <import type="android.view.View"/>
         <variable name="preference" type="com.saidim.nawa.media.pref.Preference"/>
-        <variable name="viewModel" type="com.saidim.nawa.view.viewModels.MusicListViewModel"/>
+        <variable name="viewModel" type="com.saidim.nawa.view.viewModels.MainViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -42,6 +42,9 @@ object Constants {
     const val HEADSET_DISCONNECTED = 0
     const val HEADSET_CONNECTED = 1
 
+    const val MAIN_FRAGMENT = 0
+    const val MUSIC_LIST_FRAGMENT = 1
+
     const val NOTIFICATION_CHANNEL_ID: String = "NOTIFICATION_CHANNEL_ID"
     const val CLOSE_ACTION: String = "CLOSE_ACTION"
     const val PRE_ACTION: String = "PRE_ACTION"

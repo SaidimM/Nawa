@@ -31,7 +31,7 @@ class MusicPlayerFragment : BaseFragment() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun initView() {
+    override fun initView() {
         binding.viewModel = viewModel
         binding.state = state
         binding.album.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
@@ -68,5 +68,11 @@ class MusicPlayerFragment : BaseFragment() {
         binding.musicName.text = music.name
         binding.songName.text = music.name
         binding.singerName.text = music.singer
+    }
+
+    override fun initData() {
+    }
+
+    override fun observe() {
     }
 }

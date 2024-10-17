@@ -1,7 +1,6 @@
 package com.saidim.nawa.view.viewModels
 
 import LogUtil
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,13 +9,11 @@ import com.saidim.nawa.ServiceLocator
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayList
 import com.saidim.nawa.media.remote.mv.MusicVideoResult
-import com.saidim.nawa.view.models.PlayListModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MusicListViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
     companion object {
         const val TAG = "MusicListViewModel"
     }

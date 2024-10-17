@@ -2,6 +2,8 @@ package com.saidim.nawa.base.ui.pge
 
 import android.app.Activity
 import android.app.Application
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -57,22 +59,16 @@ abstract class BaseFragment : DataBindingFragment() {
             ?: throw IllegalStateException("Can't create ViewModelProvider for detached fragment")
     }
 
-    protected val Int.dp: Int get() = run {
-        return toFloat().dp
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initData()
+        initView()
+        observe()
     }
 
-    protected val Float.dp: Int get() = run {
-        val scale: Float = requireContext().resources.displayMetrics.density
-        return (this * scale + 0.5f).toInt()
-    }
+    abstract fun initView()
 
-    protected val Int.px: Int get() = run {
-        return toFloat().px
-    }
+    abstract fun initData()
 
-    protected val Float.px: Int get() = run {
-        val scale: Float = requireContext().resources.displayMetrics.density
-        return ((this - 0.5f) / scale).toInt()
-    }
-
+    abstract fun observe()
 }

@@ -6,11 +6,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blankj.utilcode.util.SnackbarUtils
 import com.bumptech.glide.Glide
+import com.saidim.nawa.Constants
 import com.saidim.nawa.R
 import com.saidim.nawa.base.ui.pge.BaseFragment
 import com.saidim.nawa.base.ui.pge.BaseRecyclerViewAdapter
 import com.saidim.nawa.base.utils.LocalMediaUtils.getAlbumArtBitmap
-import com.saidim.nawa.databinding.FragmentMusicListBinding
+import com.saidim.nawa.databinding.FragmentMainBinding
 import com.saidim.nawa.databinding.LayoutItemArtistBinding
 import com.saidim.nawa.databinding.LayoutItemPlayListBinding
 import com.saidim.nawa.databinding.LayoutItemRecentBinding
@@ -19,13 +20,13 @@ import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayList
 import com.saidim.nawa.view.models.ArtistModel
 import com.saidim.nawa.view.models.RecentModel
-import com.saidim.nawa.view.viewModels.MusicListViewModel
+import com.saidim.nawa.view.viewModels.MainViewModel
 import com.saidim.nawa.view.viewModels.MusicViewModel
 
-class MusicListFragment : BaseFragment() {
-    override val binding: FragmentMusicListBinding by lazy { FragmentMusicListBinding.inflate(layoutInflater) }
+class MainFragment : BaseFragment() {
+    override val binding: FragmentMainBinding by lazy { FragmentMainBinding.inflate(layoutInflater) }
 
-    private val viewModel: MusicListViewModel by lazy { getFragmentScopeViewModel(MusicListViewModel::class.java) }
+    private val viewModel: MainViewModel by lazy { getFragmentScopeViewModel(MainViewModel::class.java) }
     private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
 
     private val artistAdapter: BaseRecyclerViewAdapter<ArtistModel, LayoutItemArtistBinding> by lazy {
@@ -83,17 +84,18 @@ class MusicListFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecyclerView()
         initView()
-        initDate()
+        initData()
         observe()
     }
 
-    private fun initView() {
+    override fun initView() {
+        initRecyclerView()
         binding.playListCreate.setOnClickListener { viewModel.createRandomPlayList() }
+        binding.songsLayout.setOnClickListener { state.navigateToFragment(Constants.MUSIC_LIST_FRAGMENT) }
     }
 
-    private fun initDate() {
+    override fun initData() {
         state.getMusic()
         viewModel.loadPlayLists()
     }
@@ -109,7 +111,7 @@ class MusicListFragment : BaseFragment() {
         binding.playList.adapter = playListAdapter
     }
 
-    private fun observe() {
+    override fun observe() {
         viewModel.musicVideo.observe(viewLifecycleOwner) {}
         state.musics.observe(viewLifecycleOwner) { songAdapter.data = it }
         state.progress.observe(viewLifecycleOwner) {
