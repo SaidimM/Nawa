@@ -1,24 +1,25 @@
 [versions]
-agp = "8.6.0-alpha07"
-kotlin = "1.9.24"
-coreKtx = "1.10.1"
+kotlin = "2.0.20"
+gradle = "8.7.2"
+coreKtx = "1.13.1"
+ksp = "2.0.20-1.0.25"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-appcompat = "1.6.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
 material = "1.11.0"
 utils = "1.31.1"
-bindings = "8.6.1"
+bindings = "8.7.2"
 room = "2.6.1"
 lifecycleExtensions = "2.2.0"
-lifecycle = "2.7.0"
-retrofit = "2.9.0"
-loggingInterceptor = "5.0.0-alpha.2"
+lifecycle = "2.8.6"
+retrofit = "2.11.0"
+loggingInterceptor = "5.0.0-alpha.9"
 moshi = "1.15.0"
-glide = "4.13.1"
+glide = "4.15.1"
 palette = "1.0.0"
 media = "1.7.0"
-coil = "2.4.0"
+coil = "2.7.0"
 gson = "2.10.1"
 
 [libraries]
@@ -51,6 +52,7 @@ coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "gradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 

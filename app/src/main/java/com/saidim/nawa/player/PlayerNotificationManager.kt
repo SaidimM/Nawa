@@ -10,6 +10,7 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import androidx.core.app.ActivityCompat
@@ -85,7 +86,7 @@ class PlayerNotificationManager(private val playerService: PlayerService) {
             .setSilent(true)
             .setShowWhen(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setLargeIcon(null)
+            .setLargeIcon(null as Bitmap?)
             .setOngoing(playerController.isPlaying())
             .setSmallIcon(R.drawable.ic_music_note)
             .addAction(getNotificationAction(notificationActions.first))

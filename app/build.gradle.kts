@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -59,7 +60,7 @@ dependencies {
     implementation(libs.androidx.bindings)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.lifecycle.extensions)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.common.java8)
@@ -70,9 +71,9 @@ dependencies {
     implementation(libs.squareup.converter.gson)
     implementation(libs.squareup.logging.interceptor)
     implementation(libs.squareup.moshi)
-    kapt(libs.squareup.moshi.codegen)
+    ksp(libs.squareup.moshi.codegen)
     implementation(libs.androidx.palette)
     implementation(libs.bumptech.glide.glide)
-    kapt(libs.bumptech.glide.compiler)
+    ksp(libs.bumptech.glide.compiler)
     implementation(libs.coil)
 }
