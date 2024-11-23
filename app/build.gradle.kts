@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.KaptArguments
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)

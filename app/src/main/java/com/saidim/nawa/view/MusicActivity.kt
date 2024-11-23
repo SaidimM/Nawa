@@ -24,7 +24,7 @@ class MusicActivity : BaseActivity() {
         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     private val mainFragment by lazy { MainFragment() }
-    private val listFargemnt by lazy { ListFragment() }
+    private val listFragment by lazy { ListFragment() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +69,7 @@ class MusicActivity : BaseActivity() {
     private fun navigateFragment(name: Int) {
         val fragment = when (name) {
             Constants.MAIN_FRAGMENT -> mainFragment
-            Constants.MUSIC_LIST_FRAGMENT -> listFargemnt
+            Constants.MUSIC_LIST_FRAGMENT -> listFragment
             else -> mainFragment
         }
         supportFragmentManager
