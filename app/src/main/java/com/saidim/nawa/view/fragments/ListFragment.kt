@@ -1,8 +1,7 @@
 package com.saidim.nawa.view.fragments
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.saidim.nawa.R
@@ -12,12 +11,12 @@ import com.saidim.nawa.base.utils.LocalMediaUtils.getAlbumArtBitmap
 import com.saidim.nawa.databinding.FragmentListBinding
 import com.saidim.nawa.databinding.ItemSongBinding
 import com.saidim.nawa.media.local.bean.Music
+import com.saidim.nawa.view.models.SelectionTypeModel
 import com.saidim.nawa.view.viewModels.ListViewModel
 
-
-class ListFragment : BaseFragment() {
+class ListFragment(private val type: SelectionTypeModel) : BaseFragment() {
     override val binding: FragmentListBinding by lazy { FragmentListBinding.inflate(layoutInflater) }
-    private val viewModel: ListViewModel by lazy { getFragmentScopeViewModel(ListViewModel::class.java) }
+    private val viewModel: ListViewModel by viewModels()
 
     private val adapter: BaseRecyclerViewAdapter<Music, ItemSongBinding> by lazy {
         object :
@@ -33,7 +32,7 @@ class ListFragment : BaseFragment() {
     }
 
     override fun initView() {
-        activity.setTitle(R.string.text_songs)
+        activity.setTitle(type.getTitle())
         activity.actionBar?.setHomeButtonEnabled(true)
         val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.shape_divider)

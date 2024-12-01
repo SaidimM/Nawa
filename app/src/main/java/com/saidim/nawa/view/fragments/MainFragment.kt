@@ -2,56 +2,37 @@ package com.saidim.nawa.view.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.blankj.utilcode.util.SnackbarUtils
 import com.bumptech.glide.Glide
-import com.saidim.nawa.Constants
 import com.saidim.nawa.R
 import com.saidim.nawa.base.ui.pge.BaseFragment
 import com.saidim.nawa.base.ui.pge.BaseRecyclerViewAdapter
-import com.saidim.nawa.base.utils.LocalMediaUtils.getAlbumArtBitmap
 import com.saidim.nawa.databinding.FragmentMainBinding
-import com.saidim.nawa.databinding.LayoutItemArtistBinding
+import com.saidim.nawa.databinding.ItemTypeSelectionBinding
 import com.saidim.nawa.databinding.LayoutItemPlayListBinding
 import com.saidim.nawa.databinding.LayoutItemRecentBinding
-import com.saidim.nawa.databinding.LayoutItemSongBinding
-import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayList
-import com.saidim.nawa.view.models.ArtistModel
 import com.saidim.nawa.view.models.RecentModel
+import com.saidim.nawa.view.models.SelectionTypeModel
 import com.saidim.nawa.view.viewModels.MainViewModel
 import com.saidim.nawa.view.viewModels.MusicViewModel
 
 class MainFragment : BaseFragment() {
     override val binding: FragmentMainBinding by lazy { FragmentMainBinding.inflate(layoutInflater) }
 
-    private val viewModel: MainViewModel by lazy { getFragmentScopeViewModel(MainViewModel::class.java) }
-    private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
+    private val viewModel: MainViewModel by viewModels()
+    private val state: MusicViewModel by viewModels()
 
-    private val artistAdapter: BaseRecyclerViewAdapter<ArtistModel, LayoutItemArtistBinding> by lazy {
+    private val typeAdapter: BaseRecyclerViewAdapter<SelectionTypeModel, ItemTypeSelectionBinding> by lazy {
         object :
-            BaseRecyclerViewAdapter<ArtistModel, LayoutItemArtistBinding>(requireContext()) {
-            override fun getResourceId(viewType: Int) = R.layout.layout_item_artist
+            BaseRecyclerViewAdapter<SelectionTypeModel, ItemTypeSelectionBinding>(requireContext()) {
+            override fun getResourceId(viewType: Int) = R.layout.item_type_selection
 
-            override fun onBindItem(binding: LayoutItemArtistBinding, item: ArtistModel, position: Int) {
-                binding.songImage.background = null
-                binding.artistName.text = item.name
-                Glide.with(requireContext()).load(item.imageUri).into(binding.songImage)
-            }
-        }
-    }
-
-    private val songAdapter: BaseRecyclerViewAdapter<Music, LayoutItemSongBinding> by lazy {
-        object :
-            BaseRecyclerViewAdapter<Music, LayoutItemSongBinding>(requireContext()) {
-            override fun getResourceId(viewType: Int) = R.layout.layout_item_song
-
-            override fun onBindItem(binding: LayoutItemSongBinding, item: Music, position: Int) {
-                binding.songImage.background = null
-                binding.artistName.text = item.name
-                val albumCover = getAlbumArtBitmap(item.path)
-                Glide.with(requireContext()).load(albumCover).into(binding.songImage)
+            override fun onBindItem(binding: ItemTypeSelectionBinding, item: SelectionTypeModel, position: Int) {
+                binding.item = item
+                binding.root.setOnClickListener { state.gotoFragment(ListFragment(item)) }
             }
         }
     }
@@ -91,20 +72,17 @@ class MainFragment : BaseFragment() {
 
     override fun initView() {
         initRecyclerView()
-        binding.playListCreate.setOnClickListener { viewModel.createRandomPlayList() }
-        binding.songsLayout.setOnClickListener { state.navigateToFragment(Constants.MUSIC_LIST_FRAGMENT) }
     }
 
     override fun initData() {
         state.getMusic()
         viewModel.loadPlayLists()
+        typeAdapter.data = viewModel.selections
     }
 
     private fun initRecyclerView() {
-        binding.artistsList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.artistsList.adapter = artistAdapter
-        binding.songsList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.songsList.adapter = songAdapter
+        binding.selections.layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
+        binding.selections.adapter = typeAdapter
         binding.recentList.layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.HORIZONTAL, false)
         binding.recentList.adapter = recentAdapter
         binding.playList.layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
@@ -113,7 +91,6 @@ class MainFragment : BaseFragment() {
 
     override fun observe() {
         viewModel.musicVideo.observe(viewLifecycleOwner) {}
-        state.musics.observe(viewLifecycleOwner) { songAdapter.data = it }
         state.progress.observe(viewLifecycleOwner) {
             SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
         }

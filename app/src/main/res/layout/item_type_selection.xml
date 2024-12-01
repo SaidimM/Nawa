@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="item" type="com.saidim.nawa.view.models.SelectionTypeModel"/>
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <com.google.android.material.textview.MaterialTextView
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_margin="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:gravity="start"
+                android:textColor="?attr/colorOnPrimaryContainer"
+                android:text="@{item.getTitle()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:backgroundTint="?attr/colorPrimaryContainer"
+                android:background="@drawable/bg_music_item"
+                android:drawablePadding="16dp"
+                android:drawableTint="?attr/colorPrimary"
+                android:drawableStart="@{item.getDrawable()}"
+                tools:drawableStart="@drawable/ic_music"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                tools:text="@string/text_songs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ShapeAppearanceOverlay.Material3.Button"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

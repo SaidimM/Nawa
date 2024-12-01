@@ -37,7 +37,6 @@ import com.saidim.nawa.view.utils.Versioning
 class PlayerNotificationManager(private val playerService: PlayerService) {
     private val playerController get() = PlayerController.getInstance()
 
-    //notification manager/builder
     private lateinit var mNotificationBuilder: NotificationCompat.Builder
     private val mNotificationManagerCompat get() = NotificationManagerCompat.from(playerService)
 

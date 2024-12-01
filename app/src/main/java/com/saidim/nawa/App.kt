@@ -19,5 +19,12 @@ class App : BaseApplication() {
 
     companion object {
         private const val TAG = "Application"
+
+        fun getString(id: Int) = try {
+            Utils.getApp().getString(id)
+        } catch (exception: Exception) {
+            LogUtil.e(exception.message.toString())
+            ""
+        }
     }
 }

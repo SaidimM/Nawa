@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.View.MeasureSpec
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.saidim.nawa.base.ui.pge.BaseFragment
@@ -18,8 +19,8 @@ import com.saidim.nawa.view.views.MusicFragmentControllerDispatcher
 import kotlinx.coroutines.launch
 
 class MusicPlayerFragment : BaseFragment() {
-    private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
-    private val viewModel: MusicPlayerViewModel by lazy { getFragmentScopeViewModel(MusicPlayerViewModel::class.java) }
+    private val state: MusicViewModel by viewModels()
+    private val viewModel: MusicPlayerViewModel by viewModels()
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
     private val gestureDetector by lazy { MusicControllerGestureDetector(requireContext(), state) }
     private val dispatcher by lazy { MusicFragmentControllerDispatcher(binding, viewModel) }

@@ -1,6 +1,7 @@
 package com.saidim.nawa.view.viewModels
 
 import LogUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,8 @@ class MusicViewModel : ViewModel() {
 
     private val _isPermissionGranted: MutableLiveData<Boolean> = MutableLiveData(false)
     val isPermissionGranted: LiveData<Boolean> = _isPermissionGranted
+
+    var fragmentCallback: (Fragment) -> Unit = {}
 
     fun permissionGranted(isGranted: Boolean) {
         _isPermissionGranted.postValue(isGranted)
@@ -58,30 +61,14 @@ class MusicViewModel : ViewModel() {
     private var _controllerState = MutableLiveData(ControllerState.HIDDEN)
     val controllerState: LiveData<ControllerState> = _controllerState
 
+    fun gotoFragment(fragment: Fragment) {
+
+    }
+
     fun getMusic() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.loadMusics().collect { _musics.postValue(it) }
         }
-    }
-
-    fun navigateToFragment(fragment: Int) {
-        _fragment.postValue(fragment)
-    }
-
-    fun playMusic(position: Int = index) {
-        LogUtil.d(TAG, "playMusic, position: $position")
-        musicPlayer.updateCurrentMusic(musicPlayer.getCurrentList()[position])
-    }
-
-    fun onPlayPressed() {
-        playMusic()
-    }
-
-    fun seekTo(position: Int) = musicPlayer.seekTo(position)
-
-    fun onNextPressed() {
-        musicPlayer.playNext()
-        _music.postValue(musicPlayer.getCurrentMusic())
     }
 
     fun getLastPlayedMusic() {
@@ -89,10 +76,6 @@ class MusicViewModel : ViewModel() {
             repository.getLastPlayedMusic()
                 .collect { _music.postValue(it) }
         }
-    }
-
-    private fun saveCurrentMusic() {
-        music.value?.let { viewModelScope.launch(Dispatchers.IO) { repository.saveLastPlayedMusic(it) } }
     }
 
     fun updateControllerOffset(offset: Float) {
