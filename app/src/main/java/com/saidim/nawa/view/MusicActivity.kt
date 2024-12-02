@@ -3,6 +3,7 @@ package com.saidim.nawa.view
 import LogUtil
 import android.Manifest
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -19,8 +20,8 @@ class MusicActivity : BaseActivity() {
     override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
     private val gestureDetector by lazy { MusicControllerGestureDetector(this, viewModel) }
     private val dispatcher by lazy { MusicActivityControllerDispatcher(binding, viewModel) }
-    private val permissions =
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
+    else arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
