@@ -8,6 +8,7 @@ import com.saidim.nawa.media.local.LocalDataSource
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayHistory
 import com.saidim.nawa.media.local.bean.PlayList
+import com.saidim.nawa.media.local.bean.Recent
 import com.saidim.nawa.media.remote.RemoteDataSource
 import com.saidim.nawa.media.remote.music.MusicDetailResult
 import com.saidim.nawa.media.remote.search.Song
@@ -23,12 +24,25 @@ class MusicRepository(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IMusicRepository {
     private val TAG = "MusicRepository"
-    private var musicList: ArrayList<Music> = arrayListOf()
+    private var musicList: List<Music> = arrayListOf()
+    private var playLists: List<PlayList> = arrayListOf()
+    private var recentList: List<Recent> = arrayListOf()
+    private var historyList: List<PlayHistory> = arrayListOf()
 
-    override fun loadMusics() = flow {
-        localDataSource.getMusicList().collect { musicList.apply { clear() }.addAll(it) }
-        emit(musicList)
-    }.catch { LogUtil.d(TAG, it.message.toString()) }
+    override suspend fun loadMusics() {
+        musicList = localDataSource.getMusicList()
+        playLists = localDataSource.getPlayList()
+        recentList = localDataSource.getRecentList()
+        historyList = localDataSource.getHistoryList()
+    }
+
+    override fun getMusicList() = musicList
+
+    override fun getRecentList() = recentList
+
+    override fun getPlayList() = playLists
+
+    override fun getHistoryList() = historyList
 
     override fun getLastPlayedMusic() = flow {
         val musicId = SPUtils.getInstance().getString(MUSIC_ID, "-1").toLong()
@@ -37,8 +51,6 @@ class MusicRepository(
     }.catch { LogUtil.d(TAG, it.message.toString()) }
 
     override fun saveLastPlayedMusic(music: Music) = SPUtils.getInstance().put(MUSIC_ID, music.id.toString())
-
-    override fun getMusicList() = musicList
 
     override fun removeMusicFromDevice(music: Music) = localDataSource.removeMusic(music).flowOn(dispatcher)
 

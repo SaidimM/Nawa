@@ -7,16 +7,19 @@ import com.blankj.utilcode.util.Utils
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayHistory
 import com.saidim.nawa.media.local.bean.PlayList
+import com.saidim.nawa.media.local.bean.Recent
 import com.saidim.nawa.media.local.dao.MusicDao
 import com.saidim.nawa.media.local.dao.PlayHistoryDao
 import com.saidim.nawa.media.local.dao.PlayListDao
+import com.saidim.nawa.media.local.dao.RecentDao
 
-@Database(entities = [Music::class, PlayList::class, PlayHistory::class], version = 1)
+@Database(entities = [Music::class, PlayList::class, PlayHistory::class, Recent::class], version = 1)
 abstract class NawaDatabase : RoomDatabase() {
 
     abstract fun getMusicDao(): MusicDao
     abstract fun getPlayListDao(): PlayListDao
     abstract fun getPlayHistoryDao(): PlayHistoryDao
+    abstract fun getRecentDao(): RecentDao
 
     companion object {
         private const val DATABASE_NAME = "nawa.db"

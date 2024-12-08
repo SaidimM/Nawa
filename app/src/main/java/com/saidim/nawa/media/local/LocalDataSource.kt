@@ -8,11 +8,13 @@ import com.saidim.nawa.base.utils.LocalMediaUtils
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayHistory
 import com.saidim.nawa.media.local.bean.PlayList
+import com.saidim.nawa.media.local.bean.Recent
 import com.saidim.nawa.media.local.database.NawaDatabase
 import com.saidim.nawa.media.remote.lyrics.Lyric
 import com.saidim.nawa.media.remote.search.Song
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import java.io.File
 import java.io.FileOutputStream
@@ -25,8 +27,9 @@ class LocalDataSource(private val database: NawaDatabase) {
     private val musicDao = database.getMusicDao()
     private val playListDao = database.getPlayListDao()
     private val playHistoryDao = database.getPlayHistoryDao()
+    private val recentDao = database.getRecentDao()
 
-    fun getMusic(id: Long) = musicDao.getMusic(id)
+    suspend fun getMusic(id: Long) = musicDao.getMusic(id)
 
     fun isMusicLyricsExist(music: Music) = File(Constants.LYRIC_DIR + music.id + ".txt").exists()
 
@@ -95,7 +98,7 @@ class LocalDataSource(private val database: NawaDatabase) {
         }
     }
 
-    fun getMusicList() = flow {
+    suspend fun getMusicList(): List<Music> {
         LogUtil.d(TAG, "getMusicList")
         val local = LocalMediaUtils.getMusic(Utils.getApp())
         LogUtil.d(TAG, "local musics: " + local.size)
@@ -111,7 +114,25 @@ class LocalDataSource(private val database: NawaDatabase) {
         upcomingMusics.forEach { item -> musicDao.getMusic(item.id)?: musicDao.saveMusic(item) }
         LogUtil.i(TAG, "local: ${local.size}, saved: ${savedInBase.size}, deleted: ${deletedMusics.size}, upcoming: ${upcomingMusics.size}")
         val stored = musicDao.getAll()
-        emit(stored)
+        return stored
+    }
+
+    suspend fun getPlayList(): List<PlayList> {
+        val playLists = playListDao.getAll()
+        LogUtil.d(TAG, "getPlayList")
+        return playLists
+    }
+
+    suspend fun getRecentList(): List<Recent> {
+        val playLists = recentDao.getAll()
+        LogUtil.d(TAG, "getRecentList")
+        return playLists
+    }
+
+    suspend fun getHistoryList(): List<PlayHistory> {
+        val playLists = playHistoryDao.getAll()
+        LogUtil.d(TAG, "getHistoryList")
+        return playLists
     }
 
     fun syncWithRemote(music: Music, song: Song) = flow {

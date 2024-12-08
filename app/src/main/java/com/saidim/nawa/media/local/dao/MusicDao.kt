@@ -11,17 +11,17 @@ import com.saidim.nawa.media.local.bean.Music
 interface MusicDao {
 
     @Insert
-    fun saveMusic(music: Music): Long
+    suspend fun saveMusic(music: Music): Long
 
     @Update
-    fun updateMusic(music: Music): Int
+    suspend fun updateMusic(music: Music): Int
 
     @Query("SELECT * FROM music WHERE id = :id LIMIT 1")
-    fun getMusic(id: Long): Music?
+    suspend fun getMusic(id: Long): Music?
 
     @Query("SELECT * FROM music")
-    fun getAll(): List<Music>
+    suspend fun getAll(): List<Music>
 
     @Delete
-    fun deleteMusic(music: Music): Int
+    suspend fun deleteMusic(music: Music): Int
 }

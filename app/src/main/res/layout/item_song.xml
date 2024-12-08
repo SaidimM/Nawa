@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
     <data>
-        <variable name="song" type="com.saidim.nawa.media.local.bean.Music"/>
+        <variable name="item" type="com.saidim.nawa.view.models.items.Item"/>
         <import type="android.view.View"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,7 +32,7 @@
                 android:textSize="18sp"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="@{song.name}"
+                android:text="@{item.title}"
                 tools:text="Lights on"
                 android:textColor="?attr/colorOnSurface"
                 android:layout_marginEnd="16dp"
@@ -49,7 +49,7 @@
                 android:textColor="?attr/colorSurfaceVariant"
                 android:textSize="14sp"
                 android:ellipsize="end"
-                android:text="@{song.singer}"
+                android:text="@{item.title}"
                 android:lines="1"
                 android:layout_marginStart="16dp"
                 tools:text="shawn mendes"

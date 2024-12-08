@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.saidim.nawa.Constants
+import com.saidim.nawa.MusicCollector
 import com.saidim.nawa.ServiceLocator
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.view.enums.ControllerState
@@ -21,8 +22,6 @@ class MusicViewModel : ViewModel() {
 
     private val repository = ServiceLocator.getRepository()
     private val musicPlayer = ServiceLocator.getPlayer()
-
-    private var index: Int = 0
 
     private val _isPermissionGranted: MutableLiveData<Boolean> = MutableLiveData(false)
     val isPermissionGranted: LiveData<Boolean> = _isPermissionGranted
@@ -43,12 +42,6 @@ class MusicViewModel : ViewModel() {
     private var _music = MutableLiveData<Music>()
     val music: LiveData<Music> = _music
 
-    private var _fragment = MutableLiveData<Int>()
-    val fragment: LiveData<Int> = _fragment
-
-    private var _musics = MutableLiveData<List<Music>>()
-    val musics: LiveData<List<Music>> = _musics
-
     private var _playState = MutableLiveData<PlayState>()
     val playState: LiveData<PlayState> = _playState
 
@@ -61,13 +54,9 @@ class MusicViewModel : ViewModel() {
     private var _controllerState = MutableLiveData(ControllerState.HIDDEN)
     val controllerState: LiveData<ControllerState> = _controllerState
 
-    fun gotoFragment(fragment: Fragment) {
-
-    }
-
     fun getMusic() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.loadMusics().collect { _musics.postValue(it) }
+        viewModelScope.launch(Dispatchers.Default) {
+            MusicCollector.getInstance().initData()
         }
     }
 

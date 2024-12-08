@@ -4,12 +4,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.saidim.nawa.media.local.bean.PlayHistory
+import com.saidim.nawa.media.local.bean.Recent
 
 @Dao
-interface PlayHistoryDao {
+interface RecentDao {
     @Insert
-    suspend fun save(playHistory: PlayHistory): Long
+    suspend fun save(recent: Recent): Long
 
-    @Query("SELECT * FROM playhistory")
-    suspend fun getAll(): List<PlayHistory>
+    @Query("SELECT * FROM recent")
+    suspend fun getAll(): List<Recent>
 }

@@ -4,14 +4,18 @@ import android.graphics.Bitmap
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayHistory
 import com.saidim.nawa.media.local.bean.PlayList
+import com.saidim.nawa.media.local.bean.Recent
 import com.saidim.nawa.media.remote.lyrics.Lyric
 import kotlinx.coroutines.flow.Flow
 
 interface IMusicRepository {
-    fun loadMusics(): Flow<List<Music>>
+    suspend fun loadMusics()
+    fun getMusicList(): List<Music>
+    fun getRecentList(): List<Recent>
+    fun getPlayList(): List<PlayList>
+    fun getHistoryList(): List<PlayHistory>
     fun getLastPlayedMusic(): Flow<Music>
     fun saveLastPlayedMusic(music: Music)
-    fun getMusicList(): List<Music>
     fun removeMusicFromDevice(music: Music): Flow<Result<Any>>
     fun getMusicLyrics(music: Music): Flow<List<Lyric>>
     fun getFavoriteMusicList(): Flow<PlayList>

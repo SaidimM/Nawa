@@ -39,6 +39,8 @@ object LocalMediaUtils {
                 val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID))
                 var singer =
                     cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
+                var singerId =
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID))
                 val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
                 val duration =
                     cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
@@ -51,6 +53,7 @@ object LocalMediaUtils {
                 //把歌曲名字和歌手切割开
                 //song.setName(name);
                 music.singer = singer
+                music.singerId = singerId
                 music.path = path
                 music.duration = duration.toLong()
                 music.size = size

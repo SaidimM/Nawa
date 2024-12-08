@@ -5,14 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.saidim.nawa.App.Companion.getString
-import com.saidim.nawa.R
+import com.saidim.nawa.MusicCollector
 import com.saidim.nawa.ServiceLocator
 import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.local.bean.PlayList
 import com.saidim.nawa.media.remote.mv.MusicVideoResult
-import com.saidim.nawa.view.fragments.ListFragment
-import com.saidim.nawa.view.models.SelectionTypeModel
+import com.saidim.nawa.view.models.lists.MusicList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,12 +20,7 @@ class MainViewModel : ViewModel() {
         const val TAG = "MusicListViewModel"
     }
 
-    val selections = listOf(
-        SelectionTypeModel(R.string.text_songs, R.drawable.ic_music),
-        SelectionTypeModel(R.string.text_artist, R.drawable.ic_artist),
-        SelectionTypeModel(R.string.text_albums, R.drawable.ic_album),
-        SelectionTypeModel(R.string.text_play_list, R.drawable.ic_list),
-    )
+    private val musicList = MusicList()
 
     private val repository = ServiceLocator.getRepository()
     var index: Int = 0
@@ -37,11 +30,6 @@ class MainViewModel : ViewModel() {
 
     private var _playLists: MutableLiveData<List<PlayList>> = MutableLiveData()
     val playLists: LiveData<List<PlayList>> = _playLists
-
-    fun getMv(music: Music) {
-        viewModelScope.launch {
-        }
-    }
 
     fun loadPlayLists() {
         viewModelScope.launch {
