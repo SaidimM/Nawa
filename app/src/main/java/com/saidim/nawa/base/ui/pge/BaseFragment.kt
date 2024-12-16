@@ -66,9 +66,9 @@ abstract class BaseFragment : DataBindingFragment() {
         observe()
     }
 
-    abstract fun initView()
+    open fun initView() {}
 
-    abstract fun initData()
+    open fun initData() {}
 
-    abstract fun observe()
+    open fun observe() {}
 }

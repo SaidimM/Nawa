@@ -40,7 +40,6 @@ class MusicPlayerFragment : BaseFragment() {
     }
 
     private fun observeViewModel() {
-        state.music.observe(viewLifecycleOwner) { initPlayDetails(it) }
         state.playState.observe(viewLifecycleOwner) { LogUtil.d(TAG, "observeViewModel, playState: $it") }
         state.controllerState.observe(viewLifecycleOwner) { dispatcher.updateControllerState(it) }
         state.controllerOffset.observe(viewLifecycleOwner) { dispatcher.updateControllerOffset(it) }

@@ -1,11 +1,10 @@
 package com.saidim.nawa.view.fragments
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.blankj.utilcode.util.SnackbarUtils
 import com.bumptech.glide.Glide
+import com.saidim.nawa.MusicCollector
 import com.saidim.nawa.R
 import com.saidim.nawa.base.ui.pge.BaseFragment
 import com.saidim.nawa.base.ui.pge.BaseRecyclerViewAdapter
@@ -22,7 +21,7 @@ class MainFragment : BaseFragment() {
     override val binding: FragmentMainBinding by lazy { FragmentMainBinding.inflate(layoutInflater) }
 
     private val viewModel: MainViewModel by viewModels()
-    private val state: MusicViewModel by viewModels()
+    private val state: MusicViewModel by lazy { getActivityScopeViewModel(MusicViewModel::class.java) }
 
     private val recentAdapter: BaseRecyclerViewAdapter<RecentItem, LayoutItemRecentBinding> by lazy {
         object :
@@ -51,20 +50,12 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initView()
-        initData()
-        observe()
-    }
-
     override fun initView() {
         initRecyclerView()
-    }
-
-    override fun initData() {
-        state.getMusic()
-        viewModel.loadPlayLists()
+        binding.musicList.setOnClickListener { v -> state.fragmentCallback(ListFragment(MusicCollector.getInstance().musicList)) }
+        binding.artistList.setOnClickListener { v -> state.fragmentCallback(ListFragment(MusicCollector.getInstance().artistList)) }
+        binding.albumList.setOnClickListener { v -> state.fragmentCallback(ListFragment(MusicCollector.getInstance().albumList)) }
+        binding.playLists.setOnClickListener { v -> state.fragmentCallback(ListFragment(MusicCollector.getInstance().playLists)) }
     }
 
     private fun initRecyclerView() {

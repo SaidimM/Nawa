@@ -9,6 +9,7 @@ import com.saidim.nawa.view.models.lists.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MusicCollector {
     private val repository = ServiceLocator.getRepository()
@@ -20,57 +21,71 @@ class MusicCollector {
     val recentList = RecentList()
 
     suspend fun initData() {
+        createDirectories()
         coroutineScope {
             repository.loadMusics()
-            launch(Dispatchers.Default) {
-                val musics = ServiceLocator.getRepository().getMusicList()
-                musics.forEach { t ->
-                    val musicItem = MusicItem(t)
-                    musicList.data.add(musicItem)
-                    if (artistList.map.contains(t.album)) artistList.map[t.album]!!.data.add(musicItem)
-                    else artistList.map.put(t.artist, ArtistItem().apply { data.add(musicItem) })
-                    if (albumList.map.contains(t.album)) albumList.map[t.album]!!.data.add(musicItem)
-                    else albumList.map.put(t.artist, AlbumItem().apply { data.add(musicItem) })
-                }
-                artistList.map.forEach { t, u -> artistList.data.add(u) }
-                albumList.map.forEach { t, u -> albumList.data.add(u) }
-                LogUtil.d("artistList size: " + albumList.data.size)
-                LogUtil.d("albumList size: " + albumList.data.size)
-            }
-            launch(Dispatchers.Default) {
-                val localRecents = repository.getRecentList()
-                val localMusics = repository.getMusicList()
-                val localLists = repository.getPlayList()
-
-                localRecents.forEach { recent ->
-                    val typeName = if (recent.id.contains('-')) recent.id.substring(recent.id.indexOf('-')) else ""
-                    val type = ItemType.valueOf(typeName)
-                    val id = if (recent.id.contains('-')) recent.id.substring(
-                        recent.id.indexOf('-') + 1,
-                        recent.id.length
-                    ) else ""
-                    when (type) {
-                        ItemType.MUSIC -> localMusics.find { it.id.toString() == id }?.let { MusicItem(it) }
-                        ItemType.PLAY_LIST -> localLists.find { it.id.toString() == id }?.let { PlayListItem(it) }
-                        ItemType.ARTIST -> artistList.data.find { item -> item.id == id }
-                        ItemType.ALBUM -> albumList.data.find { item -> item.id == id }
-                        else -> null
-                    }?.let { item -> recentList.data.add(item) }
-                }
-                LogUtil.d("recentList size: " + recentList.data.size)
-            }
-            launch(Dispatchers.Default) {
-                val localLists = repository.getPlayList()
-                localLists.forEach { t ->
-                    val listItem = PlayListItem(t).apply {
-                        data.addAll(t.getList().map { music -> MusicItem(music) })
-                        title = t.name
-                    }
-                    playLists.data.add(listItem)
-                }
-                LogUtil.d("playLists size: " + recentList.data.size)
-            }
+            launch(Dispatchers.Default) { initAlbumAndArtist() }
+            launch(Dispatchers.Default) { initRecents() }
+            launch(Dispatchers.Default) { initPlayList() }
         }
+    }
+
+    private fun initAlbumAndArtist() {
+        val musics = ServiceLocator.getRepository().getMusicList()
+        musics.forEach { t ->
+            val musicItem = MusicItem(t)
+            musicList.data.add(musicItem)
+            if (artistList.map.contains(t.album)) artistList.map[t.album]!!.data.add(musicItem)
+            else artistList.map.put(t.artist, ArtistItem().apply { data.add(musicItem) })
+            if (albumList.map.contains(t.album)) albumList.map[t.album]!!.data.add(musicItem)
+            else albumList.map.put(t.artist, AlbumItem().apply { data.add(musicItem) })
+        }
+        artistList.map.forEach { t, u -> artistList.data.add(u) }
+        albumList.map.forEach { t, u -> albumList.data.add(u) }
+        LogUtil.d("artistList size: " + albumList.data.size)
+        LogUtil.d("albumList size: " + albumList.data.size)
+    }
+
+    private fun initRecents() {
+        val localRecents = repository.getRecentList()
+        val localMusics = repository.getMusicList()
+        val localLists = repository.getPlayList()
+
+        localRecents.forEach { recent ->
+            val typeName = if (recent.id.contains('-')) recent.id.substring(recent.id.indexOf('-')) else ""
+            val type = ItemType.valueOf(typeName)
+            val id = if (recent.id.contains('-')) recent.id.substring(
+                recent.id.indexOf('-') + 1,
+                recent.id.length
+            ) else ""
+            when (type) {
+                ItemType.MUSIC -> localMusics.find { it.id.toString() == id }?.let { MusicItem(it) }
+                ItemType.PLAY_LIST -> localLists.find { it.id.toString() == id }?.let { PlayListItem(it) }
+                ItemType.ARTIST -> artistList.data.find { item -> item.id == id }
+                ItemType.ALBUM -> albumList.data.find { item -> item.id == id }
+                else -> null
+            }?.let { item -> recentList.data.add(item) }
+        }
+        LogUtil.d("recentList size: " + recentList.data.size)
+    }
+
+    private fun initPlayList() {
+        val localLists = repository.getPlayList()
+        localLists.forEach { t ->
+            val listItem = PlayListItem(t).apply {
+                data.addAll(t.getList().map { music -> MusicItem(music) })
+                title = t.name
+            }
+            playLists.data.add(listItem)
+        }
+        LogUtil.d("playLists size: " + recentList.data.size)
+    }
+
+    fun createDirectories() {
+        val albumDir = Constants.ALBUM_COVER_DIR
+        val lyricDir = Constants.LYRIC_DIR
+        if (File(albumDir).mkdirs()) LogUtil.d("create album dir success")
+        if (File(lyricDir).mkdirs()) LogUtil.d("create lyric dir success")
     }
 
     companion object {

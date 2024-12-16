@@ -20,7 +20,7 @@ class ListFragment(private val listModel: IList) : BaseFragment() {
     private val adapter: BaseRecyclerViewAdapter<Item, ItemSongBinding> by lazy {
         object :
             BaseRecyclerViewAdapter<Item, ItemSongBinding>(requireContext()) {
-            override fun getResourceId(viewType: Int) = R.layout.layout_item_song
+            override fun getResourceId(viewType: Int) = R.layout.item_song
 
             override fun onBindItem(binding: ItemSongBinding, item: Item, position: Int) {
                 binding.item = item
