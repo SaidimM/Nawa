@@ -13,6 +13,7 @@ import android.media.audiofx.AudioEffect
 import android.os.PowerManager
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
@@ -70,6 +71,7 @@ class PlayerController : IPlayerController {
 
     private val onPreparedListener = MediaPlayer.OnPreparedListener {
         syncPlayerIndex()
+        playerService.updateMetadata()
         if (isAudioFocusRequestCompatInitialized) initializeAudioFocusRequestCompat()
         if (focusEnabled && !hasFocus()) requestAudioFocus()
         resumePlayer()
@@ -142,7 +144,7 @@ class PlayerController : IPlayerController {
     override fun initMediaPlayer(music: Music?, needReset: Boolean) {
         try {
             if (music == null) return
-            if (isPlayerInitialized) mediaPlayer.reset()
+            if (isPlayerInitialized && needReset) mediaPlayer.reset()
             else mediaPlayer = MediaPlayer()
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -161,13 +163,12 @@ class PlayerController : IPlayerController {
         }
     }
 
-    override fun updateCurrentMusic(music: Music, musics: List<Music>) {
-        currentMusic = music
+    override fun startPlay(index: Int, musics: List<Music>) {
         currentList = if (isShuffleEnabled) musics.shuffled() else musics
-    }
-
-    override fun updateCurrentList(musics: List<Music>) {
-        currentList = musics
+        if (musics.size > index && musics[index] != currentMusic) {
+            currentMusic = musics[index]
+            initMediaPlayer(currentMusic, false)
+        } else playOrPause()
     }
 
     override fun syncPlayerIndex() {
@@ -237,7 +238,6 @@ class PlayerController : IPlayerController {
         val isLast = currentList.last() == currentMusic
         currentMusic = when {
             isLast && isRepeatEnabled && isShuffleEnabled -> {
-                updateCurrentList(currentList)
                 currentList.first()
             }
             isLast && isRepeatEnabled -> currentList.first()
@@ -299,7 +299,12 @@ class PlayerController : IPlayerController {
             addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
         }
         try {
-            playerService.applicationContext.registerReceiver(playerReceiver, intentFilter)
+            ContextCompat.registerReceiver(
+                playerService.applicationContext,
+                playerReceiver,
+                intentFilter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         } catch (exception: Exception) {
             exception.printStackTrace()
             LocalBroadcastManager.getInstance(playerService.applicationContext)

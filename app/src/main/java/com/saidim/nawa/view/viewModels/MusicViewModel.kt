@@ -38,10 +38,6 @@ class MusicViewModel : ViewModel() {
         }
     }
 
-    fun getLastPlayedMusic() {
-
-    }
-
     fun updateControllerOffset(offset: Float) {
         _controllerOffset.value = offset
     }

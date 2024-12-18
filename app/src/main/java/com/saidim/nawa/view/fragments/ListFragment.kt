@@ -25,6 +25,7 @@ class ListFragment(private val listModel: IList) : BaseFragment() {
             override fun onBindItem(binding: ItemSongBinding, item: Item, position: Int) {
                 binding.item = item
                 Glide.with(requireContext()).load(item.image).into(binding.albumImage)
+                binding.root.setOnClickListener { viewModel.onItemClicked(position) }
             }
         }
     }
@@ -40,8 +41,7 @@ class ListFragment(private val listModel: IList) : BaseFragment() {
     }
 
     override fun initData() {
+        viewModel.list = listModel
         adapter.data = listModel.data
     }
-
-    override fun observe() {}
 }

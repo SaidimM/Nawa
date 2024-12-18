@@ -31,10 +31,8 @@ class PlayerService : Service() {
 
     private val binder = LocalBinder()
 
-    // Check if it is already running
     var isRunning = false
 
-    // WakeLock
     private lateinit var mWakeLock: PowerManager.WakeLock
 
     lateinit var mediaMetadataCompat: MediaMetadataCompat

@@ -5,8 +5,8 @@ import com.saidim.nawa.media.local.bean.Music
 interface IPlayerController {
     fun initPlayerService(service: PlayerService)
     fun initMediaPlayer(music: Music? = null, needReset: Boolean = false)
-    fun updateCurrentMusic(music: Music, musics: List<Music> = listOf())
-    fun updateCurrentList(musics: List<Music>)
+
+    fun startPlay(index: Int, musics: List<Music> = listOf())
 
     fun syncPlayerIndex()
     fun stopSyncPlayerIndex()
