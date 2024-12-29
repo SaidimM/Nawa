@@ -1,9 +1,9 @@
 package com.saidim.nawa.view
 
+import LogUtil
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
@@ -23,22 +23,25 @@ import com.saidim.nawa.view.views.MusicControllerGestureDetector
 class MusicActivity : BaseActivity() {
     private val viewModel: MusicViewModel by viewModels()
     override val binding: ActivityMusicBinding by lazy { ActivityMusicBinding.inflate(layoutInflater) }
-    private val gestureDetector by lazy { MusicControllerGestureDetector(this, viewModel) }
-    private val dispatcher by lazy { MusicActivityControllerDispatcher(binding, viewModel) }
+    private val gestureDetector by lazy { MusicControllerGestureDetector(this) }
+    private val dispatcher by lazy { MusicActivityControllerDispatcher(binding, gestureDetector) }
+
     private val permissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
         else arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private lateinit var playerService: PlayerService
-    private val conn by lazy { object: ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            LogUtils.d("onServiceConnected")
-            playerService = (service as PlayerService.LocalBinder).getService()
-        }
+    private val conn by lazy {
+        object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                LogUtils.d("onServiceConnected")
+                playerService = (service as PlayerService.LocalBinder).getService()
+            }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            LogUtils.d("onServiceConnected")
+            override fun onServiceDisconnected(name: ComponentName?) {
+                LogUtils.d("onServiceConnected")
+            }
         }
-    }}
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +60,9 @@ class MusicActivity : BaseActivity() {
     @SuppressLint("ClickableViewAccessibility")
     private fun initView() {
         binding.cardView.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
-        gestureDetector.onSingleTapListener = { gestureDetector.expandController() }
         viewModel.fragmentCallback = { navigateFragment(it) }
+        LogUtil.d(TAG, "viewModel.isThereLastPlayedMusic(): ${viewModel.isThereLastPlayedMusic()}")
+        binding.cardView.visibility = if (viewModel.isThereLastPlayedMusic()) View.VISIBLE else View.GONE
     }
 
     override fun onStop() {
@@ -67,8 +71,6 @@ class MusicActivity : BaseActivity() {
     }
 
     fun observe() {
-        viewModel.controllerState.observe(this) { dispatcher.changeControllerState(it) }
-        viewModel.controllerOffset.observe(this) { dispatcher.changeControllerOffset(it) }
     }
 
     private fun navigateFragment(fragment: Fragment) {

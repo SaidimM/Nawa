@@ -17,6 +17,7 @@ class MusicViewModel : ViewModel() {
 
     private val repository = ServiceLocator.getRepository()
     private val musicPlayer = ServiceLocator.getPlayer()
+    private val preference = ServiceLocator.getPreference()
 
     var fragmentCallback: (Fragment) -> Unit = {}
 
@@ -26,27 +27,14 @@ class MusicViewModel : ViewModel() {
     private var _progress = MutableLiveData<Float>()
     val progress: LiveData<Float> = _progress
 
-    private var _controllerOffset = MutableLiveData(0f)
-    val controllerOffset: LiveData<Float> = _controllerOffset
-
-    private var _controllerState = MutableLiveData(ControllerState.HIDDEN)
-    val controllerState: LiveData<ControllerState> = _controllerState
-
     fun loadMusic() {
-        viewModelScope.launch(Dispatchers.Default) {
-            MusicCollector.getInstance().initData()
-        }
-    }
+        viewModelScope.launch(Dispatchers.Default) { MusicCollector.getInstance().initData() }
 
-    fun updateControllerOffset(offset: Float) {
-        _controllerOffset.value = offset
-    }
-
-    fun updateControllerState(state: ControllerState) {
-        _controllerState.value = state
     }
 
     fun recyclePlayer() {
         musicPlayer.releasePlayer()
     }
+
+    fun isThereLastPlayedMusic() = preference.latestPlayedSong != null
 }

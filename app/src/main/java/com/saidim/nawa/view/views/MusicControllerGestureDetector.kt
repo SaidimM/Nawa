@@ -16,34 +16,45 @@ import com.saidim.nawa.view.enums.ControllerState
 import com.saidim.nawa.view.viewModels.MusicViewModel
 
 @SuppressLint("ClickableViewAccessibility")
-class MusicControllerGestureDetector(
-    context: Context,
-    private val viewModel: MusicViewModel
-) : SimpleOnGestureListener() {
+class MusicControllerGestureDetector(context: Context) : SimpleOnGestureListener() {
     private val TAG = "onTouchEvent"
     private var controllerAnimator = ValueAnimator()
     private val collapsedHeight = 88.dp
     private val deltaHeight = ScreenUtils.getScreenHeight() - collapsedHeight
     private val gestureDetector = GestureDetector(context, this)
-    var onSingleTapListener: (() -> Boolean) = { false }
+    private var controllerState: ControllerState = ControllerState.HIDDEN
+    private var controllerOffset: Float = 0f
+
+    private var onSingleTapListener: (() -> Boolean) = {
+        when (controllerState) {
+            ControllerState.HIDDEN -> expandController()
+            ControllerState.SHOWING -> false
+            ControllerState.COLLAPSING -> false
+            ControllerState.COLLAPSED -> expandController()
+            ControllerState.EXPENDING -> false
+            ControllerState.EXPENDED -> false
+        }
+    }
+    var onStateChangedListener: (ControllerState) -> Unit = {}
+    var onOffsetChangedListener: (Float) -> Unit = {}
 
     fun onTouchEvent(event: MotionEvent?): Boolean {
         if (event == null) return false
         val isEventConsumed =  gestureDetector.onTouchEvent(event)
         val isActionUp = event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_OUTSIDE
-        val isScrolling = viewModel.controllerState.value == ControllerState.EXPENDING || viewModel.controllerState.value == ControllerState.COLLAPSING
+        val isScrolling = controllerState == ControllerState.EXPENDING || controllerState == ControllerState.COLLAPSING
         return if (!isEventConsumed && isScrolling && isActionUp) onActionUp()
         else isEventConsumed
     }
 
     private fun updateOffset(offset: Float) {
         if (offset < 0 || offset > 1) return
-        viewModel.updateControllerOffset(offset)
+        onOffsetChangedListener(offset)
     }
 
     private fun updateState(state: ControllerState) {
-        if (state == viewModel.controllerState.value) return
-        viewModel.updateControllerState(state)
+        if (state == controllerState) return
+        onStateChangedListener(state)
     }
 
     override fun onSingleTapUp(e: MotionEvent) = onSingleTapListener.invoke()
@@ -55,12 +66,12 @@ class MusicControllerGestureDetector(
     }
 
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-        if (viewModel.controllerState.value == ControllerState.EXPENDED) updateState(ControllerState.COLLAPSING)
-        else if (viewModel.controllerState.value == ControllerState.COLLAPSED) updateState(ControllerState.EXPENDING)
+        if (controllerState == ControllerState.EXPENDED) updateState(ControllerState.COLLAPSING)
+        else if (controllerState == ControllerState.COLLAPSED) updateState(ControllerState.EXPENDING)
         val deltaOffset = (e1!!.y - e2.y) / deltaHeight
         LogUtil.i(TAG, "deltaHeight: $deltaHeight")
         LogUtil.i(TAG, "e1.y: ${e1.y}, e2.y: ${e2.y}, deltaOffset: $deltaOffset")
-        updateOffset(viewModel.controllerOffset.value!! + deltaOffset)
+        updateOffset(controllerOffset + deltaOffset)
         return true
     }
 
@@ -72,15 +83,15 @@ class MusicControllerGestureDetector(
     }
 
     private fun onActionUp(): Boolean {
-        if (viewModel.controllerState.value == ControllerState.EXPENDING) expandController()
-        else if (viewModel.controllerState.value == ControllerState.COLLAPSING) collapseController()
+        if (controllerState == ControllerState.EXPENDING) expandController()
+        else if (controllerState == ControllerState.COLLAPSING) collapseController()
         return false
     }
 
     fun collapseController(): Boolean {
-        if (viewModel.controllerState.value == ControllerState.COLLAPSED) return false
+        if (controllerState == ControllerState.COLLAPSED) return false
         controllerAnimator.cancel()
-        controllerAnimator = ObjectAnimator.ofFloat(viewModel.controllerOffset.value!!, 0f).apply {
+        controllerAnimator = ObjectAnimator.ofFloat(controllerOffset, 0f).apply {
             duration = 500
             interpolator = bezierInterpolator
             addUpdateListener { updateOffset(this.animatedValue as Float) }
@@ -91,10 +102,10 @@ class MusicControllerGestureDetector(
     }
 
     fun expandController(): Boolean {
-        if (viewModel.controllerState.value == ControllerState.EXPENDED) return false
+        if (controllerState == ControllerState.EXPENDED) return false
         controllerAnimator.cancel()
         updateState(ControllerState.EXPENDING)
-        controllerAnimator = ObjectAnimator.ofFloat(viewModel.controllerOffset.value!!, 1f).apply {
+        controllerAnimator = ObjectAnimator.ofFloat(controllerOffset, 1f).apply {
             duration = 500
             interpolator = bezierInterpolator
             addUpdateListener { updateOffset(this.animatedValue as Float) }

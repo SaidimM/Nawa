@@ -22,7 +22,7 @@ class MusicPlayerFragment : BaseFragment() {
     private val state: MusicViewModel by viewModels()
     private val viewModel: MusicPlayerViewModel by viewModels()
     override val binding: FragmentPlayerBinding by lazy { FragmentPlayerBinding.inflate(layoutInflater) }
-    private val gestureDetector by lazy { MusicControllerGestureDetector(requireContext(), state) }
+    private val gestureDetector by lazy { MusicControllerGestureDetector(requireContext()) }
     private val dispatcher by lazy { MusicFragmentControllerDispatcher(binding, viewModel) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,13 +36,10 @@ class MusicPlayerFragment : BaseFragment() {
         binding.viewModel = viewModel
         binding.state = state
         binding.album.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
-        gestureDetector.onSingleTapListener = { gestureDetector.expandController() || dispatcher.onSingleTap() }
     }
 
     private fun observeViewModel() {
         state.playState.observe(viewLifecycleOwner) { LogUtil.d(TAG, "observeViewModel, playState: $it") }
-        state.controllerState.observe(viewLifecycleOwner) { dispatcher.updateControllerState(it) }
-        state.controllerOffset.observe(viewLifecycleOwner) { dispatcher.updateControllerOffset(it) }
         viewModel.lyrics.observe(viewLifecycleOwner) {
             binding.lyricsView.data = it
             binding.lyricsView.measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY)

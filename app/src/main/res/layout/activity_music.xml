@@ -44,9 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:alpha="0"
             android:elevation="16dp"
-            android:visibility="gone"
             app:cardCornerRadius="16dp"
             app:layout_constraintBottom_toBottomOf="parent">
 

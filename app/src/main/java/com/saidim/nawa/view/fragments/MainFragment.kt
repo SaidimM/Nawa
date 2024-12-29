@@ -67,9 +67,8 @@ class MainFragment : BaseFragment() {
 
     override fun observe() {
         viewModel.musicVideo.observe(viewLifecycleOwner) {}
-        state.progress.observe(viewLifecycleOwner) {
-            SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { }
-        }
+        state.progress.observe(viewLifecycleOwner)
+        { SnackbarUtils.with(requireView()).setAction("progress: ${it * 100}%") { } }
         viewModel.playLists.observe(viewLifecycleOwner) { playListAdapter.data = it }
     }
 }
