@@ -22,9 +22,9 @@ import com.saidim.nawa.Constants
 import com.saidim.nawa.Constants.VOLUME_DUCK
 import com.saidim.nawa.Constants.VOLUME_NORMAL
 import com.saidim.nawa.ServiceLocator
-import com.saidim.nawa.base.utils.MediaPlayerUtils
 import com.saidim.nawa.base.utils.toContentUri
 import com.saidim.nawa.media.local.bean.Music
+import com.saidim.nawa.media.pref.Preference
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -38,7 +38,8 @@ class PlayerController : IPlayerController {
     private lateinit var listener: PlayerControllerListener
     private lateinit var audioFocusRequestCompat: AudioFocusRequestCompat
 
-    private val sharedPreference by lazy { ServiceLocator.getPreference() }
+    private val preference = ServiceLocator.getPreference()
+
     private val updateIndexTask by lazy { Runnable { listener.onIndexChanged(mediaPlayer.currentPosition) } }
 
     private val isPlayerInitialized get() = ::mediaPlayer.isInitialized
@@ -47,21 +48,18 @@ class PlayerController : IPlayerController {
     private val isAudioFocusRequestCompatInitialized get() = ::audioFocusRequestCompat.isInitialized
     private val isAudioManagerInitialized get() = ::audioManager.isInitialized
 
-    private val focusEnabled get() = sharedPreference.isFocusEnabled
-    private val lastPlaybackCompleted get() = sharedPreference.hasCompletedPlayback
-    private val continueOnEnd get() = sharedPreference.continueOnEnd
-    private val isStoredSong get() = sharedPreference.latestPlayedSong?.id == currentMusic?.id
-
     private val mediaSessionActions = PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PAUSE or
             PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
             PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_SEEK_TO
 
-    private var state = PlayState.IDLE
     private var audioFocusState = AudioManager.AUDIOFOCUS_NONE
     private var executor: ScheduledExecutorService? = null
 
-    private val isPlaying = state == PlayState.PLAYING
     private var currentMusic: Music? = null
+        set(value) {
+            if (value != null) preference.latestPlayedSong = value
+            field = value
+        }
     private var currentList: List<Music> = arrayListOf()
 
     private var playOnFocusGain = false
@@ -72,8 +70,8 @@ class PlayerController : IPlayerController {
     private val onPreparedListener = MediaPlayer.OnPreparedListener {
         syncPlayerIndex()
         playerService.updateMetadata()
-        if (isAudioFocusRequestCompatInitialized) initializeAudioFocusRequestCompat()
-        if (focusEnabled && !hasFocus()) requestAudioFocus()
+        if (!isAudioFocusRequestCompatInitialized) initializeAudioFocusRequestCompat()
+        if (!hasFocus()) requestAudioFocus()
         resumePlayer()
     }
 
@@ -94,7 +92,7 @@ class PlayerController : IPlayerController {
                     // Audio focus was lost, but it's possible to duck (i.e.: play quietly)
                     audioFocusState = AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
                     playOnFocusGain = false
-                    restoreVolume = isPlayerInitialized && state == PlayState.PLAYING
+                    restoreVolume = isPlayerInitialized && isPlaying()
                 }
 
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
@@ -102,7 +100,7 @@ class PlayerController : IPlayerController {
                     // playback should resume
                     audioFocusState = AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
                     restoreVolume = false
-                    playOnFocusGain = isPlayerInitialized && state == PlayState.PLAYING
+                    playOnFocusGain = isPlayerInitialized && isPlaying()
                 }
                 // Lost audio focus, probably "permanently"
                 AudioManager.AUDIOFOCUS_LOSS -> audioFocusState = AudioManager.AUDIOFOCUS_LOSS
@@ -110,7 +108,7 @@ class PlayerController : IPlayerController {
             }
             // Update the player state based on the change
             if (hasFocus()) {
-                if (isPlaying || state == PlayState.PAUSED && restoreVolume || state == PlayState.PAUSED && playOnFocusGain) {
+                if (restoreVolume || !isPlaying() && playOnFocusGain) {
                     configurePlayerState()
                 }
             }
@@ -134,6 +132,7 @@ class PlayerController : IPlayerController {
 
     override fun initPlayerService(service: PlayerService) {
         mediaPlayer = MediaPlayer()
+        currentMusic = preference.latestPlayedSong
         playerService = service
         audioManager = playerService.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         registerActionReceiver()
@@ -141,11 +140,11 @@ class PlayerController : IPlayerController {
         openOrCloseAudioEffectAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)
     }
 
-    override fun initMediaPlayer(music: Music?, needReset: Boolean) {
+    override fun playMusic(music: Music?, needReset: Boolean) {
         try {
             if (music == null) return
-            if (isPlayerInitialized && needReset) mediaPlayer.reset()
-            else mediaPlayer = MediaPlayer()
+            if (mediaPlayer.isPlaying) mediaPlayer.stop()
+            mediaPlayer.reset()
             val audioAttributes = AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .setUsage(AudioAttributes.USAGE_MEDIA).build()
@@ -157,17 +156,20 @@ class PlayerController : IPlayerController {
                 setAudioAttributes(audioAttributes)
             }
             mediaPlayer.setDataSource(playerService, music.id.toContentUri())
-            mediaPlayer.prepareAsync()
+            mediaPlayer.prepare()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     override fun startPlay(index: Int, musics: List<Music>) {
-        currentList = if (isShuffleEnabled) musics.shuffled() else musics
+        LogUtil.d(TAG, "startPlay")
+        if (currentList != musics) currentList = if (isShuffleEnabled) musics.shuffled() else musics
+        LogUtil.d(TAG, "musics[index] != currentMusic: " + (musics[index] != currentMusic))
         if (musics.size > index && musics[index] != currentMusic) {
+            LogUtil.d(TAG, "initMediaPlayer(currentMusic)")
             currentMusic = musics[index]
-            initMediaPlayer(currentMusic, false)
+            playMusic(currentMusic)
         } else playOrPause()
     }
 
@@ -214,6 +216,7 @@ class PlayerController : IPlayerController {
     }
 
     override fun releasePlayer() {
+        LogUtil.d(TAG, "releasePlayer")
         if (isPlayerInitialized) {
             openOrCloseAudioEffectAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)
             mediaPlayer.release()
@@ -221,15 +224,15 @@ class PlayerController : IPlayerController {
             stopSyncPlayerIndex()
         }
         if (isPlayServiceInitialized) playerService.notificationManager.cancelNotification()
-        state = PlayState.IDLE
         unregisterActionReceiver()
     }
 
     override fun playOrPause(forcePause: Boolean) {
-        if (isPlaying || forcePause) {
+        LogUtil.d(TAG, "playOrPause")
+        LogUtil.d(TAG, "isPlaying: ${isPlaying()}")
+        if (isPlaying() || forcePause) {
             pausePlayer()
         } else {
-            if (isStoredSong) playerService.updateMetadata()
             resumePlayer()
         }
     }
@@ -243,12 +246,12 @@ class PlayerController : IPlayerController {
             isLast && isRepeatEnabled -> currentList.first()
             else -> currentList[currentList.indexOf(currentMusic) + 1]
         }
-        initMediaPlayer(currentMusic!!, false)
+        playMusic(currentMusic!!)
     }
 
     override fun playPrevious() {
         currentMusic = currentList[currentList.indexOf(currentMusic) - 1]
-        initMediaPlayer(currentMusic!!, false)
+        playMusic(currentMusic!!)
     }
 
     override fun setRepeatEnabled(enabled: Boolean) {
@@ -273,7 +276,7 @@ class PlayerController : IPlayerController {
     }
 
     override fun setVolume(volume: Int) {
-        if (isPlaying) {
+        if (isPlaying()) {
             fun volFromPercent(percent: Int): Float {
                 if (percent == 100) return 1f
                 return (1 - (ln((101 - percent).toFloat()) / ln(101f)))
@@ -283,7 +286,7 @@ class PlayerController : IPlayerController {
         }
     }
 
-    override fun isPlaying() = isPlaying
+    override fun isPlaying() = if (::mediaPlayer.isInitialized) mediaPlayer.isPlaying else false
 
     override fun getCurrentMusic() = currentMusic
 
@@ -344,22 +347,15 @@ class PlayerController : IPlayerController {
     }
 
     private fun resumePlayer() {
-        if (focusEnabled) requestAudioFocus()
-        if (lastPlaybackCompleted && continueOnEnd && isStoredSong || continueOnEnd && lastPlaybackCompleted || lastPlaybackCompleted) {
-            sharedPreference.hasCompletedPlayback = false
-            playNext()
-        } else {
-            MediaPlayerUtils.safePlay(mediaPlayer)
-        }
-        state = PlayState.PLAYING
+        requestAudioFocus()
+        play()
         updatePlayStatus()
         playerService.startForeground()
     }
 
     private fun pausePlayer() {
-        MediaPlayerUtils.safePause(mediaPlayer)
+        pause()
         playerService.isNotificationShowing = false
-        state = PlayState.PAUSED
         updatePlayStatus()
         playerService.notificationManager.run {
             updatePlayPauseAction()
@@ -398,7 +394,7 @@ class PlayerController : IPlayerController {
     }
 
     private fun updatePlayStatus(updateUI: Boolean = true) {
-        val playState = state.value
+        val playState = if (isPlaying()) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED
         val playbackState = PlaybackStateCompat.Builder().setActions(mediaSessionActions)
             .setState(playState, mediaPlayer.currentPosition.toLong(), 1.0f)
             .build()
@@ -408,5 +404,25 @@ class PlayerController : IPlayerController {
 
     private fun updatePlayMode() {
         if (isPlayerListenerInitialized) listener.onPlayModeChanged(isRepeatEnabled, isShuffleEnabled)
+    }
+
+    fun pause() {
+        with(mediaPlayer) {
+            try {
+                if (isPlaying) pause()
+            } catch (e: IllegalStateException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun play() {
+        with(mediaPlayer) {
+            try {
+                start()
+            } catch (e: IllegalStateException) {
+                e.printStackTrace()
+            }
+        }
     }
 }

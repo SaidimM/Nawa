@@ -11,11 +11,12 @@ import com.saidim.nawa.media.local.bean.Music
 import com.saidim.nawa.media.models.NotificationAction
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.lang.reflect.Type
 
 class Preference {
     private val sp = Utils.getApp().getSharedPreferences("nawa", Context.MODE_PRIVATE)
-    private val mMoshi = Moshi.Builder().build()
+    private val mMoshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
     // active fragments type
     private val typeActiveTabs = Types.newParameterizedType(List::class.java, String::class.java)
@@ -92,16 +93,8 @@ class Preference {
     }
 
     private fun <T : Any> getObjectForClass(key: String, clazz: Class<T>): T? {
-        val json = sp.getString(key, null)
-        return if (json == null) {
-            null
-        } else {
-            try {
-                mMoshi.adapter(clazz).fromJson(json)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
+        return sp.getString(key, null)?.let { json ->
+            runCatching { mMoshi.adapter(clazz).fromJson(json) }.getOrNull()
         }
     }
 }
